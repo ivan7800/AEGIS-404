@@ -1,5 +1,5 @@
 /* AEGIS 404 — service worker · offline-first, cache-versioned */
-const CACHE = 'aegis404-v2.0.1';
+const CACHE = 'aegis404-v2.0.2';
 const ASSETS = [
   './',
   './index.html',

@@ -2,6 +2,14 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.0.2] — 2026-07-10
+### Añadido
+- **Instalación PWA en iOS**: metadatos `apple-mobile-web-app-*` y `apple-touch-icon` para que la app se instale y se muestre correctamente al añadirla a la pantalla de inicio en Safari/iOS.
+### Corregido
+- **Accesibilidad de la barrera ética**: el modal declara `role="dialog"`, `aria-modal` y `aria-labelledby`, y el icono se marca como decorativo para lectores de pantalla.
+- **Ruido en el analizador de JWT**: la ausencia del claim opcional `iat` pasa de severidad *baja* a *informativa*, evitando penalizar tokens correctos.
+- Coherencia de versión en interfaz, service worker, manifiesto y README.
+
 ## [2.0.1] — 2026-07-10
 ### Corregido
 - **Fiabilidad del escáner de URL.** Los relays ahora se prueban **en paralelo** (gana el primero que devuelve HTML válido) en lugar de en secuencia, eliminando la espera acumulada por timeouts encadenados que hacía fallar el escaneo en sitios como los que solo respondían por un relay concreto.

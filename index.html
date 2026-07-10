@@ -6,8 +6,13 @@
 <meta name="theme-color" content="#0a0e14">
 <meta name="description" content="AEGIS 404 — Suite de análisis de seguridad web. Escanea cualquier URL en vivo: cabeceras, CSP, contenido mixto, SRI, secretos, formularios y más. Informes exportables. Análisis en el navegador.">
 <meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AEGIS 404">
 <title>AEGIS 404 — Suite de Análisis de Seguridad Web</title>
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 4 7v9c0 7 5 11 12 14 7-3 12-7 12-14V7z' fill='%230a0e14' stroke='%23e8a13a' stroke-width='2'/%3E%3Cpath d='M16 10v7M16 21v1' stroke='%23e8a13a' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 :root{
@@ -367,7 +372,7 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
     </div>
     <main class="content" id="content"><!-- views injected here --></main>
     <div class="footer">
-      <span>AEGIS 404 · v2.0.1 — Universo 404</span>
+      <span>AEGIS 404 · v2.0.2 — Universo 404</span>
       <span>100% local · sin servidor · sin telemetría</span>
     </div>
   </div>
@@ -377,10 +382,10 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
 
 <!-- ============ ETHICS GATE ============ -->
 <div class="scrim" id="gate" style="display:none">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <div class="mh">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2 3 6v6c0 5 3.5 8 9 10 5.5-2 9-5 9-10V6z" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <h2>Uso ético y autorizado</h2>
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 6v6c0 5 3.5 8 9 10 5.5-2 9-5 9-10V6z" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <h2 id="gateTitle">Uso ético y autorizado</h2>
     </div>
     <p>AEGIS 404 es una herramienta de <b>auditoría defensiva</b>. El análisis se realiza en tu navegador. El <b>Escáner de URL</b> trae la página objetivo a través de un <b>relay CORS público</b> (por lo que esa URL pasa por un tercero); el resto de módulos analizan datos que aportas y no salen de tu dispositivo.</p>
     <ul>
@@ -831,7 +836,7 @@ function analyzeJWT(tok){
   const now=Math.floor(Date.now()/1000);
   if(payload.exp==null)f.push({severity:'med',title:'Sin claim exp (expiración)',body:'Un token sin caducidad es válido indefinidamente si se roba.',fix:'Añade <code>exp</code> con una ventana corta.'});
   else if(payload.exp<now)f.push({severity:'info',title:'Token expirado',body:`Caducó el ${new Date(payload.exp*1000).toLocaleString()}.`});
-  if(payload.iat==null)f.push({severity:'low',title:'Sin claim iat',body:'Sin <code>iat</code> es más difícil aplicar políticas de antigüedad.',fix:'Incluye <code>iat</code>.'});
+  if(payload.iat==null)f.push({severity:'info',title:'Sin claim iat',body:'El claim <code>iat</code> es opcional, pero registrar la emisión ayuda a aplicar políticas de antigüedad y detectar reutilización de tokens.',fix:'Considera incluir <code>iat</code>.'});
   Object.keys(payload).forEach(k=>{ if(/pass|secret|ssn|card|cvv|token/i.test(k))
     f.push({severity:'high',title:`Claim sensible en el payload: "${esc(k)}"`,body:'El payload de un JWT solo está codificado (no cifrado): cualquiera lo lee.',fix:'No incluyas datos sensibles en el JWT.'});});
   if(!f.length)f.push({severity:'ok',title:'Sin problemas evidentes en la estructura',body:'Recuerda: sin el secreto no se puede verificar la firma aquí.'});
