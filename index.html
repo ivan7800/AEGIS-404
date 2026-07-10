@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0a0e14">
-<meta name="description" content="AEGIS 404 — Suite de análisis de seguridad web para pentesting ético autorizado. Analiza cabeceras, CSP, código, JWT y cookies. Exporta informes. 100% local, sin servidor.">
+<meta name="description" content="AEGIS 404 — Suite de análisis de seguridad web. Escanea cualquier URL en vivo: cabeceras, CSP, contenido mixto, SRI, secretos, formularios y más. Informes exportables. Análisis en el navegador.">
 <meta name="color-scheme" content="dark">
 <title>AEGIS 404 — Suite de Análisis de Seguridad Web</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -218,6 +218,94 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
 .footer{padding:22px 30px;color:var(--faint);font-size:12px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .footer a{color:var(--muted)}
 
+/* ---------- Live URL scanner ---------- */
+.hero{
+  position:relative;overflow:hidden;
+  background:
+    linear-gradient(180deg,var(--surface),var(--panel));
+  border:1px solid var(--line);border-radius:16px;padding:24px 24px 22px;margin-bottom:18px;
+}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(600px 220px at 88% -30%, rgba(232,161,58,.14), transparent 62%),
+    radial-gradient(520px 220px at -8% 130%, rgba(73,214,200,.10), transparent 60%);}
+.hero .hz{position:relative;z-index:1}
+.hero .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+.hero h1{font-size:25px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.hero p{color:var(--muted);font-size:13.5px;max-width:62ch;margin-bottom:16px}
+.scanbar{display:flex;gap:10px;flex-wrap:wrap}
+.scanbar .u{flex:1;min-width:220px;position:relative;display:flex;align-items:center}
+.scanbar .u svg{position:absolute;left:13px;width:17px;height:17px;color:var(--faint);pointer-events:none}
+.scanbar input{padding-left:38px;height:46px;font-family:var(--mono);font-size:14px;background:var(--ink)}
+.scanbar .btn.primary{height:46px;padding:0 22px;font-size:14.5px}
+.scan-adv{margin-top:10px;font-size:12px}
+.scan-adv summary{color:var(--muted);cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
+.scan-adv summary::-webkit-details-marker{display:none}
+.scan-adv summary::before{content:"▸";color:var(--faint);transition:.15s}
+.scan-adv[open] summary::before{transform:rotate(90deg)}
+.scan-adv .advbody{margin-top:11px;padding:13px;background:var(--ink);border:1px solid var(--line-soft);border-radius:var(--r-sm);display:flex;flex-direction:column;gap:11px}
+.advhint{margin:7px 0 0;font-size:11.5px;line-height:1.55;color:var(--muted)}
+.advhint code{font-family:var(--mono);background:var(--surface);padding:1px 5px;border-radius:4px;color:var(--cyan);font-size:11px}
+.linklike{background:none;border:0;color:var(--amber);cursor:pointer;font:inherit;font-size:11.5px;padding:0;text-decoration:underline;margin-left:2px}
+.workercode{margin-top:9px;padding:12px 13px;background:#05070b;border:1px solid var(--line-soft);border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--c-txt,#c9d6e6);overflow-x:auto;white-space:pre}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-family:var(--mono);color:var(--muted);background:var(--ink);border:1px solid var(--line-soft);border-radius:20px;padding:4px 11px}
+.chip b{color:var(--text);font-weight:600}
+
+/* progress + sources */
+.scanprog{margin:16px 0}
+.scanprog .bar{height:6px;border-radius:20px;background:var(--ink);border:1px solid var(--line-soft);overflow:hidden}
+.scanprog .bar>i{display:block;height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,var(--cyan),var(--amber));transition:width .3s ease}
+.scanprog .step{font-size:12.5px;color:var(--muted);margin-top:9px;font-family:var(--mono);display:flex;align-items:center;gap:8px}
+.spin{width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--amber);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.sources{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:16px}
+.source{display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:11px 13px}
+.source .si{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.source.ok .si{background:rgba(63,191,122,.14);color:var(--green)}
+.source.warn .si{background:rgba(217,178,58,.16);color:var(--sev-med)}
+.source.fail .si{background:rgba(229,72,77,.14);color:var(--red)}
+.source .st b{font-size:12.5px;display:block}
+.source .st span{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+/* scan meta grid */
+.metagrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.metabox{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:12px 14px}
+.metabox b{display:block;font-family:var(--mono);font-size:16px;color:var(--text);line-height:1.2;word-break:break-word}
+.metabox span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+
+/* category groups */
+.catgroup{margin-bottom:14px}
+.catgroup>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;padding:13px 16px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--r-sm);user-select:none}
+.catgroup[open]>summary{border-radius:var(--r-sm) var(--r-sm) 0 0;border-bottom:0}
+.catgroup>summary::-webkit-details-marker{display:none}
+.catgroup>summary .ci{width:30px;height:30px;border-radius:8px;background:var(--ink);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--amber);flex-shrink:0}
+.catgroup>summary h3{font-size:14px;font-weight:600;flex:1}
+.catgroup>summary .cn{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;gap:5px;align-items:center}
+.catgroup>summary .arw{color:var(--faint);transition:.15s;font-size:12px}
+.catgroup[open]>summary .arw{transform:rotate(90deg)}
+.catbody{border:1px solid var(--line-soft);border-top:0;border-radius:0 0 var(--r-sm) var(--r-sm);padding:14px 16px;background:var(--panel)}
+.mini-pill{font-family:var(--mono);font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
+.mini-pill.crit{background:rgba(229,72,77,.16);color:#ff8a8e}
+.mini-pill.high{background:rgba(232,161,58,.16);color:#f2bf6a}
+.mini-pill.med{background:rgba(217,178,58,.15);color:#e6cf78}
+.mini-pill.low{background:rgba(73,214,200,.14);color:#7fe6db}
+.mini-pill.info{background:rgba(119,137,161,.15);color:#9fb0c6}
+.mini-pill.ok{background:rgba(63,191,122,.15);color:#7cd6a2}
+
+/* recent scans */
+.recent{display:flex;flex-direction:column;gap:7px}
+.recent button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:10px 13px;color:var(--text);transition:.14s}
+.recent button:hover{border-color:var(--cyan);background:var(--surface-2)}
+.recent .rg{font-family:var(--mono);font-weight:800;font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex-shrink:0}
+.recent .rurl{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent .rmeta{font-size:11px;color:var(--faint);font-family:var(--mono)}
+.recent .rx{color:var(--faint);flex-shrink:0}
+
+.disc{font-size:12px;color:var(--muted);background:rgba(232,161,58,.06);border:1px solid rgba(232,161,58,.22);border-radius:var(--r-sm);padding:11px 13px;display:flex;gap:10px;align-items:flex-start;margin-bottom:16px}
+.disc svg{width:17px;height:17px;flex-shrink:0;color:var(--amber);margin-top:1px}
+
 /* ---------- Responsive ---------- */
 @media(max-width:860px){
   .app{grid-template-columns:1fr}
@@ -251,7 +339,9 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
     <nav class="nav" id="nav">
       <div class="nav-label">Panel</div>
       <button data-view="dash" class="active"><span class="ico">◈</span>Inicio</button>
-      <div class="nav-label">Análisis</div>
+      <div class="nav-label">Escaneo en vivo</div>
+      <button data-view="scan"><span class="ico">◎</span>Escáner de URL<span class="badge zero" data-badge="scan">0</span></button>
+      <div class="nav-label">Análisis manual</div>
       <button data-view="headers"><span class="ico">⛨</span>Cabeceras HTTP<span class="badge zero" data-badge="headers">0</span></button>
       <button data-view="csp"><span class="ico">⧉</span>Política CSP<span class="badge zero" data-badge="csp">0</span></button>
       <button data-view="code"><span class="ico">⟨⟩</span>Escáner de código<span class="badge zero" data-badge="code">0</span></button>
@@ -277,7 +367,7 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
     </div>
     <main class="content" id="content"><!-- views injected here --></main>
     <div class="footer">
-      <span>AEGIS 404 · v1.0.0 — Universo 404</span>
+      <span>AEGIS 404 · v2.0.1 — Universo 404</span>
       <span>100% local · sin servidor · sin telemetría</span>
     </div>
   </div>
@@ -292,11 +382,11 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
       <svg viewBox="0 0 24 24" fill="none"><path d="M12 2 3 6v6c0 5 3.5 8 9 10 5.5-2 9-5 9-10V6z" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <h2>Uso ético y autorizado</h2>
     </div>
-    <p>AEGIS 404 es una herramienta de <b>auditoría defensiva</b>. Analiza cabeceras, políticas, código, tokens y cookies que <b>tú aportas manualmente</b>. Todo se procesa en tu navegador; nada sale de tu dispositivo.</p>
+    <p>AEGIS 404 es una herramienta de <b>auditoría defensiva</b>. El análisis se realiza en tu navegador. El <b>Escáner de URL</b> trae la página objetivo a través de un <b>relay CORS público</b> (por lo que esa URL pasa por un tercero); el resto de módulos analizan datos que aportas y no salen de tu dispositivo.</p>
     <ul>
-      <li>Analiza únicamente sistemas de tu propiedad o para los que tienes autorización escrita.</li>
+      <li>Escanea o analiza únicamente sistemas de tu propiedad o para los que tienes autorización escrita.</li>
       <li>El testing sin permiso puede ser ilegal en tu jurisdicción.</li>
-      <li>Esta suite no ataca ni explota objetivos: solo evalúa datos que pegas.</li>
+      <li>Esta suite no ataca ni explota objetivos: solo lee y evalúa contenido público de la página.</li>
     </ul>
     <div class="ack">
       <input type="checkbox" id="ackbox">
@@ -323,7 +413,9 @@ const store = {
 };
 
 /* shared findings registry (per module) drives the Report view */
-const REG = { headers:[], csp:[], code:[], cookies:[], owasp:[] };
+const REG = { scan:[], headers:[], csp:[], code:[], cookies:[], owasp:[] };
+/* metadata + provenance of the most recent live scan (drives the report) */
+let LAST_SCAN = null;
 const SEV_ORDER = {crit:0,high:1,med:2,low:3,info:4,ok:5};
 const SEV_LABEL = {crit:'Crítico',high:'Alto',med:'Medio',low:'Bajo',info:'Info',ok:'OK'};
 
@@ -335,7 +427,7 @@ function allFindings(){
   return out.sort((a,b)=>SEV_ORDER[a.severity]-SEV_ORDER[b.severity]);
 }
 function refreshBadges(){
-  const map={headers:'headers',csp:'csp',code:'code',cookies:'cookies',owasp:'owasp'};
+  const map={scan:'scan',headers:'headers',csp:'csp',code:'code',cookies:'cookies',owasp:'owasp'};
   for(const [mod,key] of Object.entries(map)){
     const n=REG[mod].filter(f=>f.severity!=='ok').length;
     const b=$(`[data-badge="${key}"]`);
@@ -389,6 +481,7 @@ const VIEWS = {};
 /* ---------------- DASHBOARD ---------------- */
 VIEWS.dash = ()=>{
   const tools=[
+    ['scan','◎','Escáner de URL','Escaneo en vivo: introduce una dirección y audita cabeceras, contenido mixto, SRI, secretos y más.'],
     ['headers','⛨','Cabeceras HTTP','Evalúa CSP, HSTS, X-Frame-Options y 8 cabeceras más. Nota A–F.'],
     ['csp','⧉','Política CSP','Detecta unsafe-inline, comodines y directivas ausentes. Constructor incluido.'],
     ['code','⟨⟩','Escáner de código','SAST ligero: XSS por innerHTML, eval, secretos, enlaces inseguros…'],
@@ -401,22 +494,40 @@ VIEWS.dash = ()=>{
   const total=allFindings().length;
   const crit=allFindings().filter(f=>f.severity==='crit').length;
   const high=allFindings().filter(f=>f.severity==='high').length;
+  const recent=recentScans();
   return `
-  <div class="head">
-    <div class="eyebrow">◈ Panel de control</div>
-    <h1>Suite de análisis de seguridad web</h1>
-    <p>Herramientas de auditoría defensiva que se ejecutan íntegramente en tu navegador. Elige un módulo, pega el activo que quieres analizar y acumula hallazgos para exportar un informe.</p>
+  <div class="hero">
+    <div class="hz">
+      <div class="eyebrow">◎ Escaneo en vivo</div>
+      <h1>Audita cualquier web desde una URL</h1>
+      <p>Introduce una dirección y AEGIS trae la página real y la examina: contenido mixto, scripts sin integridad, secretos expuestos, formularios inseguros, tecnología detectada, cabeceras y más. Nota A–F e informe exportable.</p>
+      <div class="scanbar">
+        <div class="u">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <input type="text" id="heroUrl" placeholder="ejemplo.com  ·  https://tu-sitio.dev" autocomplete="off" spellcheck="false" inputmode="url">
+        </div>
+        <button class="btn primary" id="heroGo">Escanear</button>
+      </div>
+      <div class="chips">
+        <span class="chip">◎ <b>9</b> módulos</span>
+        <span class="chip">⛨ <b>20+</b> comprobaciones en vivo</span>
+        <span class="chip">▦ Export MD · JSON · CSV · HTML · PDF</span>
+        <span class="chip">◫ PWA offline</span>
+      </div>
+    </div>
   </div>
   <div class="stat-row">
     <div class="stat"><b style="color:var(--text)">${total}</b><span>Hallazgos activos</span></div>
     <div class="stat"><b style="color:var(--red)">${crit}</b><span>Críticos</span></div>
     <div class="stat"><b style="color:var(--amber)">${high}</b><span>Altos</span></div>
-    <div class="stat"><b style="color:var(--cyan)">8</b><span>Módulos</span></div>
+    <div class="stat"><b style="color:var(--cyan)">9</b><span>Módulos</span></div>
   </div>
-  <div class="note" style="margin-bottom:20px">
-    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M12 11v5M12 8v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    <div>Una app estática no puede escanear webs de terceros (política CORS del navegador). AEGIS analiza datos que <b>tú aportas</b>: usa el <b>bookmarklet de auto-inspección</b> en el módulo Cabeceras para recoger los datos de tu propia página.</div>
-  </div>
+  ${recent.length?`<div class="card"><h2><span class="dot"></span>Escaneos recientes</h2>
+    <div class="recent">${recent.map((r,i)=>`<button data-rescan="${esc(r.url)}">
+      <span class="rg" style="color:${r.color};background:${r.color}1f">${r.grade}</span>
+      <span class="rurl">${esc(r.url)}</span>
+      <span class="rmeta">${r.findings} hallazgos · ${r.when}</span>
+      <span class="rx">↻</span></button>`).join('')}</div></div>`:''}
   <div class="dashgrid">
     ${tools.map(([v,i,t,d])=>`<button class="tool-card" data-goto="${v}">
       <div class="ti">${i}</div><h3>${t}</h3><p>${d}</p></button>`).join('')}
@@ -424,6 +535,10 @@ VIEWS.dash = ()=>{
 };
 VIEWS.dash.bind = root=>{
   $$('[data-goto]',root).forEach(b=>b.onclick=()=>go(b.dataset.goto));
+  const go2=()=>{const u=$('#heroUrl',root).value.trim();if(u)startScan(u);};
+  $('#heroGo',root).onclick=go2;
+  $('#heroUrl',root).addEventListener('keydown',e=>{if(e.key==='Enter')go2();});
+  $$('[data-rescan]',root).forEach(b=>b.onclick=()=>startScan(b.dataset.rescan));
 };
 
 /* ---------------- HEADERS ANALYZER ---------------- */
@@ -989,7 +1104,8 @@ VIEWS.utils.bind = root=>{
 VIEWS.report = ()=>{
   const f=allFindings();
   const by=s=>f.filter(x=>x.severity===s).length;
-  const modName={headers:'Cabeceras HTTP',csp:'CSP',code:'Código',cookies:'Cookies',owasp:'OWASP'};
+  const modName={scan:'Escáner de URL',headers:'Cabeceras HTTP',csp:'CSP',code:'Código',cookies:'Cookies',owasp:'OWASP'};
+  const autoTarget=LAST_SCAN?`${LAST_SCAN.host} — nota ${LAST_SCAN.grade} (${LAST_SCAN.score}/100)`:'';
   return `<div class="head"><div class="eyebrow">▦ Informe</div>
     <h1>Informe consolidado</h1>
     <p>Todos los hallazgos acumulados en esta sesión, listos para exportar. Genera un informe de auditoría en varios formatos.</p></div>
@@ -1002,11 +1118,12 @@ VIEWS.report = ()=>{
   </div>
   <div class="card"><h2><span class="dot"></span>Exportar</h2>
     <label class="fld">Nombre del objetivo / proyecto (opcional)</label>
-    <input type="text" id="rTarget" placeholder="ej. app.miweb.com — Auditoría interna">
+    <input type="text" id="rTarget" value="${esc(autoTarget)}" placeholder="ej. app.miweb.com — Auditoría interna">
     <div class="row" style="margin-top:14px">
-      <button class="btn primary" id="rMd">Markdown</button>
+      <button class="btn primary" id="rHtml">HTML premium</button>
+      <button class="btn" id="rMd">Markdown</button>
       <button class="btn" id="rJson">JSON</button>
-      <button class="btn" id="rHtml">HTML autónomo</button>
+      <button class="btn" id="rCsv">CSV</button>
       <button class="btn ghost" id="rPrint">Imprimir / PDF</button>
       <button class="btn ghost sm" id="rClear">Vaciar hallazgos</button>
     </div>
@@ -1016,7 +1133,7 @@ VIEWS.report = ()=>{
   </div>`;
 };
 VIEWS.report.bind = root=>{
-  const modName={headers:'Cabeceras HTTP',csp:'CSP',code:'Código',cookies:'Cookies',owasp:'OWASP'};
+  const modName={scan:'Escáner de URL',headers:'Cabeceras HTTP',csp:'CSP',code:'Código',cookies:'Cookies',owasp:'OWASP'};
   const target=()=>$('#rTarget',root).value.trim()||'Objetivo no especificado';
   const strip=h=>String(h).replace(/<[^>]+>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
   const date=()=>new Date().toLocaleString('es-ES');
@@ -1037,13 +1154,644 @@ VIEWS.report.bind = root=>{
   };
   $('#rHtml',root).onclick=()=>{
     const f=allFindings();
-    const rows=f.map((x,i)=>`<div class="f ${x.severity}"><div class="ft"><span class="s ${x.severity}">${SEV_LABEL[x.severity]}</span><b>${i+1}. ${esc(strip(x.title))}</b><em>${esc(modName[x.module]||x.module)}${x.loc?' · '+esc(x.loc):''}</em></div><p>${esc(strip(x.body))}</p>${x.fix?`<div class="fix"><b>Solución:</b> ${esc(strip(x.fix))}</div>`:''}</div>`).join('');
-    const doc=`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Informe AEGIS 404</title><style>body{font-family:system-ui,sans-serif;max-width:820px;margin:32px auto;padding:0 20px;color:#1a2230;background:#fff}h1{border-bottom:3px solid #e8a13a;padding-bottom:8px}.meta{color:#556;font-size:14px;margin:8px 0 24px}.f{border:1px solid #e2e6ec;border-left:4px solid #999;border-radius:8px;padding:12px 16px;margin:12px 0}.f.crit{border-left-color:#e5484d}.f.high{border-left-color:#e8a13a}.f.med{border-left-color:#d9b23a}.f.low{border-left-color:#3aa}.ft{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.s{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;color:#fff}.s.crit{background:#e5484d}.s.high{background:#e8a13a}.s.med{background:#c99a20}.s.low{background:#2b8a83}em{color:#889;font-size:12px;margin-left:auto}p{color:#445;font-size:14px}.fix{background:#f4f8f4;border-radius:6px;padding:8px 10px;font-size:13px;margin-top:8px}footer{margin-top:40px;color:#889;font-size:12px;border-top:1px solid #e2e6ec;padding-top:12px}</style></head><body><h1>Informe de auditoría de seguridad</h1><div class="meta"><b>Objetivo:</b> ${esc(target())} &nbsp;·&nbsp; <b>Fecha:</b> ${esc(date())} &nbsp;·&nbsp; <b>Hallazgos:</b> ${f.length}</div>${rows||'<p>Sin hallazgos.</p>'}<footer>Generado con AEGIS 404 · Universo 404 · análisis 100% local</footer></body></html>`;
-    download(`aegis-informe-${Date.now()}.html`,doc,'text/html');toast('HTML descargado');
+    const bySev=s=>f.filter(x=>x.severity===s).length;
+    const scanBlock = LAST_SCAN ? `<div class="grade" style="--gc:${LAST_SCAN.color}"><div class="gg">${LAST_SCAN.grade}</div><div><b>${esc(LAST_SCAN.host)}</b><span>${LAST_SCAN.score}/100 · escaneado el ${esc(new Date(LAST_SCAN.when).toLocaleString('es-ES'))}</span></div></div>` : '';
+    const sevCard=(lbl,n,cls)=>`<div class="sc ${cls}"><b>${n}</b><span>${lbl}</span></div>`;
+    const rows=f.map((x,i)=>`<div class="f ${x.severity}"><div class="ft"><span class="s ${x.severity}">${esc(SEV_LABEL[x.severity])}</span><b>${i+1}. ${esc(strip(x.title))}</b><em>${esc(modName[x.module]||x.module)}${x.loc?' · '+esc(x.loc):''}</em></div><p>${esc(strip(x.body))}</p>${x.fix?`<div class="fix"><b>Solución</b> ${esc(strip(x.fix))}</div>`:''}</div>`).join('');
+    const doc=`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Informe de seguridad — ${esc(target())}</title>
+<style>
+:root{--ink:#0f1620;--amber:#c9821f;--red:#d23b40;--med:#b8901c;--cyan:#1f8b82;--line:#e4e8ef}
+*{box-sizing:border-box}body{font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;max-width:860px;margin:0 auto;padding:40px 24px 64px;color:#1a2230;background:#fff;line-height:1.55}
+.brand{font-family:ui-monospace,Menlo,monospace;font-weight:700;letter-spacing:1px;color:var(--amber);font-size:13px;text-transform:uppercase}
+h1{font-size:28px;letter-spacing:-.5px;margin:6px 0 4px;border:0}
+.meta{color:#667;font-size:13.5px;margin-bottom:24px}
+.grade{display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-left:5px solid var(--gc);border-radius:12px;padding:16px 20px;margin:0 0 22px}
+.grade .gg{font-family:ui-monospace,monospace;font-weight:800;font-size:38px;color:var(--gc);line-height:1}
+.grade b{font-size:16px;display:block}.grade span{color:#778;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:30px}
+.sc{border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center}
+.sc b{font-family:ui-monospace,monospace;font-size:24px;display:block}.sc span{font-size:11px;color:#778;text-transform:uppercase;letter-spacing:.5px}
+.sc.crit b{color:var(--red)}.sc.high b{color:var(--amber)}.sc.med b{color:var(--med)}.sc.low b{color:var(--cyan)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#556;border-bottom:2px solid var(--line);padding-bottom:7px;margin:28px 0 14px}
+.f{border:1px solid var(--line);border-left:4px solid #aaa;border-radius:9px;padding:13px 17px;margin:11px 0;page-break-inside:avoid}
+.f.crit{border-left-color:var(--red)}.f.high{border-left-color:var(--amber)}.f.med{border-left-color:var(--med)}.f.low{border-left-color:var(--cyan)}.f.info{border-left-color:#9aa5b5}
+.ft{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.s{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:5px;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+.s.crit{background:var(--red)}.s.high{background:var(--amber)}.s.med{background:var(--med)}.s.low{background:var(--cyan)}.s.info{background:#8794a5}
+.ft b{font-size:14.5px}em{color:#8a94a3;font-size:12px;margin-left:auto;font-style:normal;font-family:ui-monospace,monospace}
+p{color:#3d4658;font-size:13.5px;margin:8px 0 0}
+.fix{background:#f3f8f4;border:1px solid #d9ead9;border-radius:7px;padding:9px 12px;font-size:13px;margin-top:9px}
+.fix b{color:#1f7a4d;font-size:11px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+.appendix{margin-top:34px;font-size:12.5px;color:#667;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+footer{margin-top:36px;color:#8a94a3;font-size:12px;border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media print{body{padding:0}a{color:inherit}}
+</style></head><body>
+<div class="brand">🛡 AEGIS 404 · Universo 404</div>
+<h1>Informe de auditoría de seguridad</h1>
+<div class="meta"><b>Objetivo:</b> ${esc(target())} &nbsp;·&nbsp; <b>Fecha:</b> ${esc(date())} &nbsp;·&nbsp; <b>Hallazgos:</b> ${f.length}</div>
+${scanBlock}
+<div class="cards">
+  ${sevCard('Críticos',bySev('crit'),'crit')}${sevCard('Altos',bySev('high'),'high')}${sevCard('Medios',bySev('med'),'med')}${sevCard('Bajos',bySev('low'),'low')}${sevCard('Info',bySev('info'),'info')}
+</div>
+<h2>Hallazgos detallados</h2>
+${rows||'<p>Sin hallazgos registrados.</p>'}
+<div class="appendix"><b>Metodología.</b> Los hallazgos del <b>Escáner de URL</b> se derivan del HTML real de la página, obtenido a través de un relay CORS público y analizado localmente en el navegador (sin ejecución de scripts). El resto de módulos analizan datos aportados manualmente. Las cabeceras servidas solo por HTTP pueden no ser visibles vía relay. Este informe es orientativo y no sustituye una auditoría profesional. Realiza pruebas únicamente sobre activos propios o autorizados por escrito.</div>
+<footer><span>Generado con AEGIS 404 · análisis en el navegador</span><span>${esc(date())}</span></footer>
+</body></html>`;
+    download(`aegis-informe-${Date.now()}.html`,doc,'text/html');toast('Informe HTML descargado');
+  };
+  $('#rCsv',root).onclick=()=>{
+    const f=allFindings();
+    const q=v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`;
+    const head=['#','severidad','modulo','titulo','descripcion','ubicacion','solucion'];
+    const lines=[head.join(',')];
+    f.forEach((x,i)=>lines.push([i+1,SEV_LABEL[x.severity],modName[x.module]||x.module,strip(x.title),strip(x.body),x.loc||'',x.fix?strip(x.fix):''].map(q).join(',')));
+    download(`aegis-informe-${Date.now()}.csv`,'\uFEFF'+lines.join('\r\n'),'text/csv');
+    toast('CSV descargado');
   };
   $('#rPrint',root).onclick=()=>window.print();
   $('#rClear',root).onclick=()=>{Object.keys(REG).forEach(k=>REG[k]=[]);refreshBadges();go('report');toast('Hallazgos vaciados');};
 };
+
+/* =======================================================================
+   LIVE URL SCANNER — fetch real pages via CORS relays, analyze locally
+   ==================================================================== */
+let SCAN_QUEUE = null;          // {url} pending when navigating from dashboard
+let SCANNING = false;
+
+const PROXIES = [
+  {name:'allorigins/raw', build:u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u), kind:'raw'},
+  {name:'allorigins',     build:u=>'https://api.allorigins.win/get?url='+encodeURIComponent(u), kind:'json'},
+  {name:'codetabs',       build:u=>'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u), kind:'raw'},
+  {name:'corsproxy.io',   build:u=>'https://corsproxy.io/?url='+encodeURIComponent(u),          kind:'raw'},
+  {name:'cors.eu.org',    build:u=>'https://cors.eu.org/'+u,                                     kind:'raw'},
+  {name:'thingproxy',     build:u=>'https://thingproxy.freeboard.io/fetch/'+u,                  kind:'raw'},
+];
+
+const CATS = {
+  transport:['⇄','Transporte y cifrado'],
+  content:['◨','Contenido y XSS'],
+  sri:['⛓','Integridad de recursos (SRI)'],
+  csp:['⧉','Content Security Policy'],
+  headers:['⛨','Cabeceras de seguridad'],
+  cookies:['◫','Cookies'],
+  secrets:['⚠','Secretos y fugas de datos'],
+  forms:['▭','Formularios y entradas'],
+  tech:['⚙','Tecnología y terceros'],
+  hygiene:['✦','Higiene y buenas prácticas'],
+};
+
+function normalizeUrl(input){
+  let s=String(input||'').trim();
+  if(!s) throw new Error('Introduce una URL.');
+  if(!/^https?:\/\//i.test(s)) s='https://'+s;
+  let u;
+  try{ u=new URL(s); }catch{ throw new Error('URL no válida.'); }
+  if(!/^https?:$/.test(u.protocol)) throw new Error('Solo se admiten esquemas http/https.');
+  if(!u.hostname.includes('.')) throw new Error('El dominio no parece válido.');
+  return u;
+}
+
+function fetchWithTimeout(url, ms, opts={}){
+  const ctl=new AbortController();
+  const t=setTimeout(()=>ctl.abort(),ms);
+  return fetch(url,{...opts,signal:ctl.signal,redirect:'follow'}).finally(()=>clearTimeout(t));
+}
+
+/* Fetch the page through a single relay; resolve with usable HTML or reject. */
+async function fetchViaRelay(p, target, ms){
+  const res=await fetchWithTimeout(p.build(target),ms);
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  if(p.kind==='json'){
+    const j=await res.json();
+    const html=j&&j.contents;
+    if(!(html && html.length>40)) throw new Error('respuesta vacía');
+    return {html, source:p.name,
+      httpStatus:(j.status&&j.status.http_code)||null,
+      contentType:(j.status&&j.status.content_type)||'',
+      finalUrl:(j.status&&j.status.url)||target};
+  }
+  const html=await res.text();
+  if(!(html && html.length>40 && /<[a-z!]/i.test(html))) throw new Error('sin HTML');
+  return {html, source:p.name, httpStatus:null, contentType:res.headers.get('content-type')||'', finalUrl:target};
+}
+
+/* Race all relays in parallel; first to return usable HTML wins. customProxy is tried too. */
+async function fetchPage(u, customProxy, onStep){
+  const target=u.href;
+  const chain=[];
+  if(customProxy){
+    chain.push({name:'tu relay', build:x=>customProxy+(/=$/.test(customProxy)?encodeURIComponent(x):x), kind:'raw'});
+  }
+  chain.push(...PROXIES);
+  onStep&&onStep(`Probando ${chain.length} relays en paralelo…`);
+  const errs=new Array(chain.length).fill('?');
+  const attempts=chain.map((p,i)=>
+    fetchViaRelay(p, target, 15000)
+      .then(r=>{ errs[i]=`${p.name}: ok`; return r; })
+      .catch(e=>{ errs[i]=`${p.name}: ${e.name==='AbortError'?'timeout':(e.message||'error')}`; throw e; })
+  );
+  try{
+    return await Promise.any(attempts);
+  }catch{
+    throw new Error('Ningún relay pudo traer la página. '+errs.join(' · '));
+  }
+}
+
+/* Best-effort authoritative header grade via Mozilla HTTP Observatory (v2). */
+async function observatoryScan(host, onStep){
+  try{
+    onStep&&onStep('Consultando Mozilla Observatory…');
+    const base='https://observatory-api.mdn.mozilla.net/api/v2';
+    const res=await fetchWithTimeout(`${base}/scan?host=${encodeURIComponent(host)}`,15000,{method:'POST'});
+    if(!res.ok) return {ok:false,reason:`HTTP ${res.status}`};
+    const j=await res.json();
+    const grade=j.grade||(j.scan&&j.scan.grade)||null;
+    const score=(typeof j.score==='number'?j.score:(j.scan&&j.scan.score));
+    const tests=j.tests||j.test_results||null;
+    return {ok:true,grade,score,tests,raw:j};
+  }catch(e){
+    return {ok:false,reason:e.name==='AbortError'?'timeout':(e.message||'sin CORS')};
+  }
+}
+
+/* Map Observatory test results to findings (defensive about shape). */
+function observatoryFindings(obs){
+  const out=[];
+  if(!obs||!obs.ok) return out;
+  if(obs.grade){
+    out.push({severity:'info',cat:'headers',title:`Nota Observatory: ${obs.grade}${typeof obs.score==='number'?` (${obs.score}/100)`:''}`,
+      body:'Evaluación autoritativa de cabeceras de seguridad realizada por Mozilla HTTP Observatory sobre el servidor real.',
+      fix:'Usa esta nota como referencia externa junto a los hallazgos de AEGIS.'});
+  }
+  const t=obs.tests;
+  if(t && typeof t==='object'){
+    const entries=Array.isArray(t)?t:Object.entries(t).map(([k,v])=>({name:k,...(v&&typeof v==='object'?v:{})}));
+    entries.forEach(item=>{
+      const passed = item.pass===true || item.passed===true;
+      if(passed) return;
+      const name=item.name||item.test||'test';
+      const desc=item.score_description||item.description||item.result||'';
+      if(!desc && passed!==false) return;
+      const sev=/content-security|strict-transport|cookie|redirection/i.test(name)?'med':'low';
+      out.push({severity:sev,cat:'headers',
+        title:`Observatory: ${strip_(String(name)).replace(/-/g,' ')}`,
+        body:strip_(String(desc))||'Prueba de cabeceras no superada.',
+        fix:'Revisa la configuración del servidor para esta cabecera.'});
+    });
+  }
+  return out;
+}
+function strip_(h){return String(h).replace(/<[^>]+>/g,'');}
+
+/* ---- HTML analyzers (DOMParser, no script execution) ---- */
+function hostOf(href, base){
+  try{ return new URL(href, base).hostname; }catch{ return null; }
+}
+function isExternal(href, base){
+  const h=hostOf(href, base.href);
+  return h && h!==base.hostname;
+}
+function absProto(href, base){
+  try{ return new URL(href, base.href).protocol; }catch{ return null; }
+}
+
+function analyzePage(html, base){
+  const F=[];
+  const push=(sev,cat,title,body,fix,loc)=>F.push({severity:sev,cat,title,body,fix,loc});
+  const isHttps = base.protocol==='https:';
+  const doc = new DOMParser().parseFromString(html,'text/html');
+
+  /* Transport */
+  if(!isHttps){
+    push('crit','transport','La página se sirve por HTTP sin cifrar',
+      'Todo el tráfico (incluidas credenciales) viaja en claro y es interceptable o manipulable en tránsito.',
+      'Sirve el sitio exclusivamente por <code>https://</code> y activa una redirección 301 permanente desde HTTP.');
+  }
+
+  /* Mixed content (only meaningful on https pages) */
+  if(isHttps){
+    const active=[],passive=[];
+    const scan=(sel,attr,kind)=>{
+      doc.querySelectorAll(sel).forEach(elm=>{
+        const v=elm.getAttribute(attr);
+        if(v && /^http:\/\//i.test(v.trim())) (kind==='a'?active:passive).push(v.trim());
+      });
+    };
+    scan('script[src]','src','a'); scan('link[rel~="stylesheet"]','href','a');
+    scan('iframe[src]','src','a'); scan('object[data]','data','a');
+    scan('img[src]','src','p'); scan('source[src]','src','p');
+    scan('video[src]','src','p'); scan('audio[src]','src','p');
+    if(active.length) push('high','content',`Contenido mixto activo (${active.length})`,
+      'Scripts, hojas de estilo o marcos cargados por HTTP en una página HTTPS. El navegador puede bloquearlos y un atacante en la red podría inyectar código.',
+      'Cambia estas URLs a <code>https://</code>. Ejemplos:<br>'+active.slice(0,4).map(x=>`<code>${esc(x.slice(0,90))}</code>`).join('<br>'));
+    if(passive.length) push('med','content',`Contenido mixto pasivo (${passive.length})`,
+      'Imágenes o medios cargados por HTTP en una página HTTPS: rompen el candado y son manipulables.',
+      'Sirve estos recursos por <code>https://</code> o usa <code>upgrade-insecure-requests</code> en la CSP.');
+  }
+
+  /* Inline scripts / handlers */
+  const inlineScripts=[...doc.querySelectorAll('script')].filter(s=>!s.src && (s.textContent||'').trim().length>4);
+  if(inlineScripts.length) push('med','content',`Scripts inline (${inlineScripts.length})`,
+    'El código embebido en la página amplía la superficie de XSS y obliga a debilitar la CSP con <code>unsafe-inline</code>.',
+    'Externaliza el JavaScript a archivos <code>.js</code> y usa nonces o hashes en la CSP.');
+  let handlers=0;
+  doc.querySelectorAll('*').forEach(elm=>{ for(const a of elm.attributes){ if(/^on[a-z]+$/i.test(a.name)) handlers++; } });
+  if(handlers) push('med','content',`Manejadores de eventos inline (${handlers})`,
+    'Atributos como <code>onclick=</code> requieren <code>unsafe-inline</code> en la CSP y facilitan la inyección de scripts.',
+    'Sustituye por <code>addEventListener</code> en un script externo.');
+
+  /* SRI on cross-origin scripts / styles */
+  const noSriJs=[...doc.querySelectorAll('script[src]')].filter(s=>{
+    const src=s.getAttribute('src'); return src && (/^\/\//.test(src)||isExternal(src,base)) && !s.getAttribute('integrity');
+  });
+  if(noSriJs.length) push('med','sri',`Scripts de terceros sin integridad (${noSriJs.length})`,
+    'Scripts cargados desde otro origen sin atributo <code>integrity</code>: si ese proveedor es comprometido, ejecuta código arbitrario en tu web (ataque a la cadena de suministro).',
+    'Añade <code>integrity="sha384-…"</code> y <code>crossorigin="anonymous"</code>. Ejemplos:<br>'+noSriJs.slice(0,4).map(s=>`<code>${esc((s.getAttribute('src')||'').slice(0,90))}</code>`).join('<br>'));
+  const noSriCss=[...doc.querySelectorAll('link[rel~="stylesheet"][href]')].filter(l=>{
+    const h=l.getAttribute('href'); return h && (/^\/\//.test(h)||isExternal(h,base)) && !l.getAttribute('integrity');
+  });
+  if(noSriCss.length) push('low','sri',`Hojas de estilo de terceros sin integridad (${noSriCss.length})`,
+    'CSS externo sin <code>integrity</code>: puede exfiltrar datos vía selectores o alterar la interfaz si el origen es comprometido.',
+    'Añade <code>integrity</code> y <code>crossorigin</code> a estos <code>&lt;link&gt;</code>.');
+
+  /* CSP via meta */
+  const metaCsp=doc.querySelector('meta[http-equiv="Content-Security-Policy" i]');
+  if(metaCsp && metaCsp.getAttribute('content')){
+    const r=analyzeCSP(metaCsp.getAttribute('content'));
+    if(r) r.findings.forEach(f=>push(f.severity,'csp',f.title,f.body,f.fix));
+    push('info','csp','CSP definida por meta-tag',
+      'La política se declara con <code>&lt;meta&gt;</code>. Es válida pero más débil que una cabecera HTTP: no cubre respuestas no-HTML ni algunas directivas.',
+      'Sirve la CSP también (o en su lugar) como cabecera <code>Content-Security-Policy</code>.');
+  }else{
+    push('high','csp','No se detecta Content-Security-Policy en la página',
+      'Sin CSP el navegador no restringe de dónde se cargan scripts y estilos: es la principal defensa frente a XSS. (Nota: una CSP servida solo por cabecera no es visible desde este escaneo; verifícala en el módulo Cabeceras.)',
+      'Define una política, p.ej. <code>default-src \'self\'; object-src \'none\'; base-uri \'self\'</code>, y audítala en el módulo <b>CSP</b>.');
+  }
+
+  /* Referrer meta */
+  const mref=doc.querySelector('meta[name="referrer" i]');
+  if(mref && /unsafe-url/i.test(mref.getAttribute('content')||''))
+    push('low','headers','Referrer-Policy permisiva (unsafe-url)',
+      'Envía la URL completa —incluidos parámetros sensibles— a cualquier destino externo.',
+      'Usa <code>strict-origin-when-cross-origin</code> o <code>no-referrer</code>.');
+
+  /* Forms */
+  doc.querySelectorAll('form').forEach(form=>{
+    const action=form.getAttribute('action')||'';
+    const hasPass=!!form.querySelector('input[type="password" i]');
+    const proto=action?absProto(action,base):(base.protocol);
+    if(proto==='http:'){
+      push(hasPass?'crit':'high','forms',hasPass?'Formulario de contraseña enviado por HTTP':'Formulario enviado por HTTP',
+        'Los datos del formulario'+(hasPass?', incluida la contraseña,':'')+' viajan sin cifrar y pueden ser capturados.',
+        'Apunta el <code>action</code> a una URL <code>https://</code>.');
+    }else if(hasPass && !isHttps){
+      push('crit','forms','Campo de contraseña en página HTTP',
+        'Recoger contraseñas fuera de HTTPS expone las credenciales en la red.',
+        'Sirve toda la página por HTTPS.');
+    }else if(action && isExternal(action,base)){
+      push('low','forms','Formulario que envía datos a otro dominio',
+        `El formulario publica en <code>${esc(hostOf(action,base.href)||action)}</code>, un origen distinto.`,
+        'Confirma que ese destino es de confianza y usa HTTPS.');
+    }
+  });
+
+  /* target=_blank without noopener */
+  const tabnab=[...doc.querySelectorAll('a[target="_blank" i]')].filter(a=>!/noopener/i.test(a.getAttribute('rel')||''));
+  if(tabnab.length) push('med','content',`Enlaces target="_blank" sin rel="noopener" (${tabnab.length})`,
+    'La página abierta puede manipular <code>window.opener</code> y redirigir tu pestaña a un sitio de phishing (reverse tabnabbing).',
+    'Añade <code>rel="noopener noreferrer"</code> a estos enlaces.');
+
+  /* iframes without sandbox */
+  const unsafeFrames=[...doc.querySelectorAll('iframe[src]')].filter(f=>isExternal(f.getAttribute('src'),base) && !f.hasAttribute('sandbox'));
+  if(unsafeFrames.length) push('low','content',`Iframes de terceros sin sandbox (${unsafeFrames.length})`,
+    'Marcos embebidos de otros orígenes sin <code>sandbox</code> tienen más capacidades de las necesarias.',
+    'Añade <code>sandbox</code> con solo los permisos imprescindibles.');
+
+  /* Secrets */
+  const secretRules=[
+    {re:/\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/g, sev:'crit', t:'Access Key ID de AWS', fix:'Revoca la clave de inmediato y usa roles IAM en el servidor.'},
+    {re:/\bAIza[0-9A-Za-z\-_]{35}\b/g, sev:'high', t:'Clave de API de Google', fix:'Restríngela por dominio/API o muévela al backend.'},
+    {re:/\bsk-[A-Za-z0-9]{20,}\b/g, sev:'crit', t:'Clave secreta tipo "sk-" (OpenAI/Stripe u otros)', fix:'Revoca y traslada la clave al servidor.'},
+    {re:/\bgh[pousr]_[A-Za-z0-9]{30,}\b/g, sev:'crit', t:'Token de GitHub', fix:'Revoca el token en GitHub y usa secretos de servidor.'},
+    {re:/-----BEGIN (?:RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----/g, sev:'crit', t:'Clave privada embebida', fix:'Retira la clave del código y rótala.'},
+    {re:/eyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{4,}/g, sev:'med', t:'Posible JWT expuesto', fix:'No incrustes tokens en el HTML; analízalo en el módulo JWT.'},
+    {re:/(?:api[_-]?key|apikey|access[_-]?token|client[_-]?secret|auth[_-]?token|password|passwd)\s*[:=]\s*["'][^"']{8,}["']/gi, sev:'high', t:'Posible secreto en el código', fix:'Mueve credenciales al backend; nunca en el cliente.'},
+  ];
+  const seenSecret=new Set();
+  secretRules.forEach(rule=>{
+    let m; rule.re.lastIndex=0; let hits=0;
+    while((m=rule.re.exec(html))!==null){
+      const val=m[0];
+      const keySig=rule.t+':'+val.slice(0,10);
+      if(seenSecret.has(keySig)) continue;
+      seenSecret.add(keySig);
+      const masked=val.length>16?val.slice(0,6)+'…'+val.slice(-4):val.slice(0,4)+'…';
+      push(rule.sev,'secrets',rule.t+' en el código fuente',
+        `Se ha encontrado un patrón de credencial expuesto en el HTML entregado al cliente: <code>${esc(masked)}</code>.`,
+        rule.fix);
+      if(++hits>=3) break;
+    }
+    rule.re.lastIndex=0;
+  });
+
+  /* HTML comments leaking info */
+  const comments=[...html.matchAll(/<!--([\s\S]*?)-->/g)].map(m=>m[1]);
+  const leaky=comments.filter(c=>/todo|fixme|hack|password|passwd|api[_-]?key|secret|token|localhost|127\.0\.0\.1|staging|internal|debug|bug\b|xxx/i.test(c)).slice(0,5);
+  if(leaky.length) push('low','secrets',`Comentarios HTML que podrían filtrar información (${leaky.length})`,
+    'Comentarios en el código entregado al navegador con pistas sobre credenciales, entornos internos o tareas pendientes.<br>'+leaky.map(c=>`<code>${esc(c.trim().slice(0,90))}</code>`).join('<br>'),
+    'Elimina los comentarios sensibles del HTML de producción.');
+
+  /* Inline JS through the SAST engine (reuse) */
+  const inlineJs=inlineScripts.map(s=>s.textContent).join('\n\n');
+  if(inlineJs.trim()){
+    const sast=scanCode(inlineJs);
+    const seen=new Set();
+    sast.findings.forEach(f=>{
+      if(f.severity==='ok') return;
+      if(seen.has(f.title)) return; seen.add(f.title);
+      push(f.severity,'content',f.title+' (en JS inline)',f.body,f.fix);
+    });
+  }
+
+  /* Technology fingerprint */
+  const gen=doc.querySelector('meta[name="generator" i]');
+  const genC=gen?(gen.getAttribute('content')||''):'';
+  if(genC)
+    push('info','tech','Tecnología revelada por meta generator',
+      `La página anuncia <code>${esc(genC.slice(0,80))}</code>, útil para el reconocimiento de un atacante.`,
+      'Elimina o vacía la etiqueta <code>&lt;meta name="generator"&gt;</code>.');
+  if(/\/wp-(content|includes)\//i.test(html) || /wordpress/i.test(genC))
+    push('info','tech','WordPress detectado',
+      'Se identifican rutas <code>/wp-content/</code> o <code>/wp-includes/</code>.',
+      'Mantén el núcleo, temas y plugins actualizados; oculta la versión.');
+  const jq=/jquery[.-]?v?(\d+)\.(\d+)\.(\d+)?/i.exec(html);
+  if(jq){
+    const major=+jq[1];
+    const ver=`${jq[1]}.${jq[2]}${jq[3]?'.'+jq[3]:''}`;
+    if(major<3) push('med','tech',`jQuery desactualizado (${ver})`,
+      'Las versiones 1.x y 2.x de jQuery tienen vulnerabilidades XSS conocidas (p. ej. en <code>$()</code> con HTML).',
+      'Actualiza a jQuery 3.5+ o elimina la dependencia.');
+    else push('info','tech',`jQuery ${ver} detectado`,'Dependencia identificada en el código.','Mantenla actualizada.');
+  }
+  if(/angular\.js|angular\.min\.js/i.test(html) && !/@angular/i.test(html))
+    push('med','tech','AngularJS (1.x) detectado',
+      'AngularJS llegó a fin de soporte en 2022; ya no recibe parches de seguridad.',
+      'Migra a Angular moderno u otra alternativa mantenida.');
+
+  /* Third-party origins */
+  const origins=new Set();
+  doc.querySelectorAll('script[src],link[href],img[src],iframe[src]').forEach(elm=>{
+    const v=elm.getAttribute('src')||elm.getAttribute('href');
+    if(v){ const h=hostOf(v,base.href); if(h && h!==base.hostname) origins.add(h); }
+  });
+  if(origins.size>=8){
+    const list=[...origins].slice(0,8).map(h=>`<code>${esc(h)}</code>`).join(' ');
+    push('info','tech',`Amplia superficie de terceros (${origins.size} dominios)`,
+      'La página carga recursos de muchos orígenes externos. Cada uno es una dependencia de privacidad y de cadena de suministro.<br>'+list,
+      'Reduce dependencias externas, auto-aloja lo crítico y aplica SRI + CSP <code>connect-src</code>/<code>script-src</code> restrictivas.');
+  }
+
+  /* Hygiene */
+  const htmlEl=doc.documentElement;
+  if(htmlEl && !htmlEl.getAttribute('lang'))
+    push('info','hygiene','Falta el atributo lang en &lt;html&gt;','Afecta a accesibilidad y a la interpretación del contenido.','Añade p.ej. <code>&lt;html lang="es"&gt;</code>.');
+  if(!doc.querySelector('meta[charset], meta[http-equiv="Content-Type" i]'))
+    push('info','hygiene','Sin declaración de charset','Puede provocar errores de interpretación de caracteres e incluso vectores de XSS por confusión de codificación.','Añade <code>&lt;meta charset="utf-8"&gt;</code> al inicio del &lt;head&gt;.');
+
+  return F;
+}
+
+/* ---- grade + persistence ---- */
+function gradeScan(findings){
+  const w={crit:26,high:13,med:6,low:2,info:0,ok:0};
+  let score=100;
+  findings.forEach(f=>score-=(w[f.severity]||0));
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  const [g,c]=gradeFromScore(score);
+  return {score,grade:g,color:c};
+}
+function recentScans(){
+  try{ return JSON.parse(store.get('aegis-recent')||'[]'); }catch{ return []; }
+}
+function saveRecent(entry){
+  let list=recentScans().filter(r=>r.url!==entry.url);
+  list.unshift(entry); list=list.slice(0,6);
+  store.set('aegis-recent',JSON.stringify(list));
+}
+
+/* ---- orchestration ---- */
+function startScan(url){ SCAN_QUEUE={url}; go('scan'); }
+
+async function runScan(rawUrl, root){
+  if(SCANNING) return;
+  const out=$('#scanOut',root);
+  let base;
+  try{ base=normalizeUrl(rawUrl); }
+  catch(e){ out.innerHTML=`<div class="disc"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 3v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/></svg><div>${esc(e.message)}</div></div>`; return; }
+
+  SCANNING=true;
+  const btn=$('#scanGo',root); if(btn){btn.disabled=true;}
+  const customProxy=($('#scanProxy',root)?.value||'').trim();
+  const manualHtml=($('#scanManual',root)?.value||'').trim();
+
+  const setProg=(pct,msg)=>{ out.querySelector('.scanprog .bar>i').style.width=pct+'%'; out.querySelector('.scanprog .step').innerHTML=`<span class="spin"></span>${esc(msg)}`; };
+  out.innerHTML=`<div class="scanprog"><div class="bar"><i></i></div><div class="step"><span class="spin"></span>Iniciando…</div></div>`;
+
+  const sources={page:{state:'fail',detail:'—'},headers:{state:'fail',detail:'—'}};
+  let html='', pageMeta={source:'manual',httpStatus:null,contentType:'',finalUrl:base.href};
+
+  try{
+    if(manualHtml){
+      html=manualHtml; sources.page={state:'ok',detail:'HTML pegado manualmente'}; setProg(45,'Analizando HTML aportado…');
+    }else{
+      setProg(12,'Trayendo la página…');
+      const r=await fetchPage(base,customProxy,m=>setProg(28,m));
+      html=r.html; pageMeta=r;
+      sources.page={state:'ok',detail:`vía ${r.source}`+(r.httpStatus?` · HTTP ${r.httpStatus}`:'')};
+      setProg(52,'Página obtenida. Analizando…');
+    }
+  }catch(e){
+    sources.page={state:'fail',detail:e.message.slice(0,120)};
+  }
+
+  let findings=[];
+  if(html){
+    try{ findings=analyzePage(html,new URL(pageMeta.finalUrl||base.href)); }
+    catch(e){ findings.push({severity:'info',cat:'hygiene',title:'Error analizando el HTML',body:esc(e.message),fix:''}); }
+  }
+
+  /* Observatory (best effort, skipped when analyzing pasted HTML) */
+  if(!manualHtml){
+    setProg(74,'Consultando cabeceras autoritativas…');
+    const obs=await observatoryScan(base.hostname,()=>{});
+    if(obs.ok){ sources.headers={state:'ok',detail:`Observatory ${obs.grade||'—'}`}; findings.push(...observatoryFindings(obs)); }
+    else{ sources.headers={state:'warn',detail:`Observatory no disponible (${obs.reason||'CORS'})`}; }
+  }else{
+    sources.headers={state:'warn',detail:'Omitido en modo HTML manual'};
+  }
+
+  setProg(92,'Consolidando hallazgos…');
+
+  if(!html){
+    out.innerHTML=`<div class="disc"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 3v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/></svg>
+      <div><b>No se pudo obtener la página.</b><br>${esc(sources.page.detail)}<br><br>Los relays CORS públicos gratuitos son inestables (caídas, rate-limit, 403) o el sitio los bloquea. Dos salidas fiables en <b>Opciones avanzadas</b>:<br>· <b>Pega el HTML</b> de la página (Ctrl+U → seleccionar todo → copiar) y reescanea al instante, sin red.<br>· <b>Usa tu propio relay</b> (Cloudflare Workers, gratis) — la solución definitiva. El código del Worker está ahí mismo.</div></div>`;
+    SCANNING=false; if(btn)btn.disabled=false;
+    return;
+  }
+
+  const active=findings.filter(f=>f.severity!=='ok' && f.severity!=='info');
+  const {score,grade,color}=gradeScan(findings);
+  const when=new Date();
+
+  LAST_SCAN={url:base.href, finalUrl:pageMeta.finalUrl||base.href, host:base.hostname,
+    grade,color,score, when:when.toISOString(), findings, sources,
+    meta:{source:pageMeta.source,httpStatus:pageMeta.httpStatus,contentType:pageMeta.contentType,bytes:html.length}};
+  setFindings('scan',findings);
+  saveRecent({url:base.href,grade,color,findings:active.length,when:when.toLocaleDateString('es-ES'),ts:Date.now()});
+
+  renderScanResult(out,root);
+  SCANNING=false; if(btn)btn.disabled=false;
+  toast(`Escaneo completado · nota ${grade}`);
+}
+
+function renderScanResult(out,root){
+  const s=LAST_SCAN;
+  const f=s.findings;
+  const by=sev=>f.filter(x=>x.severity===sev).length;
+  const nCrit=by('crit'),nHigh=by('high'),nMed=by('med'),nLow=by('low'),nInfo=by('info');
+  const verdict = s.score>=85?'Postura sólida':s.score>=60?'Mejorable':s.score>=40?'Débil':'Crítica';
+
+  /* group by category */
+  const groups={};
+  f.forEach(x=>{ (groups[x.cat]=groups[x.cat]||[]).push(x); });
+  const worst=arr=>Math.min(...arr.map(x=>SEV_ORDER[x.severity]));
+  const orderedCats=Object.keys(groups).sort((a,b)=>worst(groups[a])-worst(groups[b]));
+
+  const srcRow=(o,icon,label)=>`<div class="source ${o.state}"><div class="si">${o.state==='ok'?'✓':o.state==='warn'?'!':'✕'}</div>
+    <div class="st"><b>${label}</b><span>${esc(o.detail)}</span></div></div>`;
+
+  const bytes=s.meta.bytes>1024?(s.meta.bytes/1024).toFixed(0)+' KB':s.meta.bytes+' B';
+
+  out.innerHTML=`
+  <div class="card">
+    <div class="grade-wrap">
+      <div class="ring">${ringSVG(s.score,s.color)}<div class="lbl"><b style="color:${s.color}">${s.grade}</b><small>${s.score}/100</small></div></div>
+      <div class="grade-meta">
+        <div class="verdict">${verdict} — <span style="color:${s.color}">${esc(s.host)}</span></div>
+        <p>${f.filter(x=>x.severity!=='ok').length} hallazgos en ${orderedCats.length} categorías. Análisis del HTML real entregado al navegador.</p>
+        <div class="counts">
+          <span class="pill"><i style="background:var(--red)"></i>${nCrit} críticos</span>
+          <span class="pill"><i style="background:var(--amber)"></i>${nHigh} altos</span>
+          <span class="pill"><i style="background:var(--sev-med)"></i>${nMed} medios</span>
+          <span class="pill"><i style="background:var(--cyan)"></i>${nLow} bajos</span>
+          <span class="pill"><i style="background:var(--muted)"></i>${nInfo} info</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sources">
+    ${srcRow(s.sources.page,'','Contenido de la página')}
+    ${srcRow(s.sources.headers,'','Cabeceras del servidor')}
+  </div>
+
+  <div class="metagrid">
+    <div class="metabox"><b>${esc(s.host)}</b><span>Dominio</span></div>
+    <div class="metabox"><b>${s.meta.httpStatus||'—'}</b><span>Estado HTTP</span></div>
+    <div class="metabox"><b>${bytes}</b><span>Tamaño HTML</span></div>
+    <div class="metabox"><b>${new URL(s.url).protocol==='https:'?'HTTPS':'HTTP'}</b><span>Transporte</span></div>
+  </div>
+
+  <div class="disc"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 3v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/></svg>
+    <div>El escaneo trae el HTML a través de un <b>relay CORS público</b> (la URL objetivo pasa por ese servicio) y analiza el contenido en tu navegador. Las cabeceras servidas solo por HTTP no son visibles vía relay: para un análisis autoritativo de cabeceras usa el módulo <b>Cabeceras</b> con el bookmarklet. Ejecuta solo sobre sitios propios o autorizados.</div>
+  </div>
+
+  ${orderedCats.map(cat=>{
+    const arr=groups[cat].slice().sort((a,b)=>SEV_ORDER[a.severity]-SEV_ORDER[b.severity]);
+    const [icon,label]=CATS[cat]||['◦',cat];
+    const w=arr[0].severity;
+    return `<details class="catgroup" ${(w==='crit'||w==='high')?'open':''}>
+      <summary><span class="ci">${icon}</span><h3>${esc(label)}</h3>
+        <span class="cn"><span class="mini-pill ${w}">${arr.length}</span></span><span class="arw">▸</span></summary>
+      <div class="catbody">${arr.map(findingHTML).join('')}</div></details>`;
+  }).join('')}
+
+  <div class="card" style="margin-top:16px">
+    <div class="row">
+      <button class="btn primary" data-goto="report">▦ Ver informe y exportar</button>
+      <button class="btn ghost sm" id="scanAgain">Escanear otra URL</button>
+    </div>
+  </div>`;
+
+  $$('[data-goto]',out).forEach(b=>b.onclick=()=>go(b.dataset.goto));
+  const again=$('#scanAgain',out); if(again)again.onclick=()=>{$('#scanUrl',root).value='';$('#scanUrl',root).focus();out.innerHTML='';};
+}
+
+/* ---------------- SCAN VIEW ---------------- */
+VIEWS.scan = ()=>{
+  const recent=recentScans();
+  return `
+  <div class="head">
+    <div class="eyebrow">◎ Escaneo en vivo</div>
+    <h1>Escáner de URL</h1>
+    <p>Introduce una dirección web. AEGIS trae la página real a través de un relay y la audita: transporte, contenido mixto, integridad de recursos, secretos expuestos, formularios, tecnología y cabeceras.</p>
+  </div>
+  <div class="hero">
+    <div class="hz">
+      <div class="scanbar">
+        <div class="u">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <input type="text" id="scanUrl" placeholder="ejemplo.com  ·  https://tu-sitio.dev" autocomplete="off" spellcheck="false" inputmode="url">
+        </div>
+        <button class="btn primary" id="scanGo">Escanear</button>
+      </div>
+      <details class="scan-adv">
+        <summary>Opciones avanzadas</summary>
+        <div class="advbody">
+          <div>
+            <label class="fld">Relay CORS propio (recomendado para uso serio)</label>
+            <input type="text" id="scanProxy" placeholder="https://mi-relay.tu-usuario.workers.dev/?url=" autocomplete="off" spellcheck="false">
+            <p class="advhint">Los relays públicos gratuitos son inestables (caídas, rate-limit, 403). Para fiabilidad, monta el tuyo gratis en <b>Cloudflare Workers</b> (100k peticiones/día) y pégalo aquí. Si la URL termina en <code>=</code> se añade codificada; si termina en <code>/</code> se añade tal cual.
+            <button type="button" class="linklike" id="showWorker">Ver código del Worker ▾</button></p>
+            <pre class="workercode" id="workerCode" hidden>export default {
+  async fetch(req) {
+    const u = new URL(req.url).searchParams.get('url');
+    if (!u) return new Response('missing ?url=', { status: 400 });
+    const r = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0 AEGIS404' } });
+    const h = new Headers(r.headers);
+    h.set('Access-Control-Allow-Origin', '*');
+    return new Response(r.body, { status: r.status, headers: h });
+  }
+}</pre>
+          </div>
+          <div>
+            <label class="fld">Analizar HTML pegado (sin red) — para sitios que bloquean relays</label>
+            <textarea id="scanManual" placeholder="Pega aquí el código fuente de la página (Ctrl+U → seleccionar todo → copiar)" style="min-height:96px"></textarea>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+  <div id="scanOut"></div>
+  ${recent.length?`<div class="card"><h2><span class="dot"></span>Escaneos recientes</h2>
+    <div class="recent">${recent.map(r=>`<button data-rescan="${esc(r.url)}">
+      <span class="rg" style="color:${r.color};background:${r.color}1f">${r.grade}</span>
+      <span class="rurl">${esc(r.url)}</span>
+      <span class="rmeta">${r.findings} hallazgos · ${r.when}</span>
+      <span class="rx">↻</span></button>`).join('')}</div></div>`:''}`;
+};
+VIEWS.scan.bind = root=>{
+  const run=()=>runScan($('#scanUrl',root).value,root);
+  $('#scanGo',root).onclick=run;
+  $('#scanUrl',root).addEventListener('keydown',e=>{if(e.key==='Enter')run();});
+  $$('[data-rescan]',root).forEach(b=>b.onclick=()=>{$('#scanUrl',root).value=b.dataset.rescan;run();});
+  const sw=$('#showWorker',root), wc=$('#workerCode',root);
+  if(sw&&wc)sw.onclick=()=>{const h=wc.hasAttribute('hidden');if(h)wc.removeAttribute('hidden');else wc.setAttribute('hidden','');sw.textContent=h?'Ocultar código del Worker ▴':'Ver código del Worker ▾';};
+  if(SCAN_QUEUE){ const u=SCAN_QUEUE.url; SCAN_QUEUE=null; $('#scanUrl',root).value=u; runScan(u,root); }
+  else if(LAST_SCAN){ $('#scanUrl',root).value=LAST_SCAN.url; renderScanResult($('#scanOut',root),root); }
+};
+
 
 /* =======================================================================
    ROUTER + SHELL

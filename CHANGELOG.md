@@ -2,6 +2,31 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.0.1] — 2026-07-10
+### Corregido
+- **Fiabilidad del escáner de URL.** Los relays ahora se prueban **en paralelo** (gana el primero que devuelve HTML válido) en lugar de en secuencia, eliminando la espera acumulada por timeouts encadenados que hacía fallar el escaneo en sitios como los que solo respondían por un relay concreto.
+- Lista de relays **ampliada y reordenada** (allorigins/raw, allorigins, codetabs, corsproxy.io, cors.eu.org, thingproxy) por fiabilidad.
+### Añadido
+- **Relay propio con Cloudflare Workers**: opción destacada en Opciones avanzadas con el código del Worker listo para copiar (gratis, 100k peticiones/día, sin rate-limit de terceros) — la solución definitiva cuando los relays públicos fallan.
+- El mensaje de error de escaneo ahora ofrece dos salidas claras: pegar el HTML, o usar tu propio relay.
+
+## [2.0.0] — 2026-07-10
+### Añadido
+- **Escáner de URL en vivo** — el módulo estrella. Introduces una dirección y AEGIS trae la página real y la audita en el navegador:
+  - Obtención del HTML mediante una cadena de **4 relays CORS** con fallback y timeout; opción de **relay propio** y de **pegar el HTML manualmente** para sitios que bloquean relays.
+  - Consulta *best-effort* a la **API de Mozilla HTTP Observatory** para una nota autoritativa de cabeceras (se degrada con elegancia si CORS lo impide).
+  - **20+ comprobaciones** sobre el HTML real (parseado con `DOMParser`, sin ejecutar scripts): transporte HTTP, contenido mixto activo/pasivo, scripts y estilos de terceros sin **SRI**, **CSP** por meta, secretos expuestos (AWS, Google, `sk-`, tokens de GitHub, claves privadas, JWT), comentarios que filtran información, formularios inseguros y campos de contraseña por HTTP, `target="_blank"` sin `noopener`, iframes sin `sandbox`, fingerprinting de tecnología (WordPress, jQuery desactualizado, AngularJS), superficie de terceros e higiene.
+  - **Nota global A–F** con anillo de puntuación, panel de **transparencia de fuentes**, metadatos del objetivo y hallazgos agrupados por categoría plegables.
+  - **Escaneos recientes** persistidos localmente y reejecutables con un clic.
+- **Informe premium en HTML** con nota, resumen por severidad, remediación y apéndice de metodología.
+- Exportación a **CSV** (además de Markdown, JSON, HTML y PDF/impresión).
+- Autorelleno del objetivo del informe con el último escaneo.
+
+### Cambiado
+- El panel de inicio ahora tiene como héroe el escáner de URL.
+- Barrera ética actualizada: se explica con transparencia que el escaneo en vivo enruta la URL a través de un relay CORS público, mientras que el resto de módulos siguen siendo 100% locales.
+- Service worker `v2.0.0`: ignora peticiones cross-origin para no cachear ni corromper las respuestas de los relays y de Observatory.
+
 ## [1.0.0] — 2026-07-10
 ### Añadido
 - **Cabeceras HTTP**: análisis de 8 cabeceras de seguridad + detección de divulgación de tecnología, con nota A–F ponderada.

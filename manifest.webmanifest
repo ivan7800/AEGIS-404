@@ -1,7 +1,7 @@
 {
   "name": "AEGIS 404 — Suite de Análisis de Seguridad Web",
   "short_name": "AEGIS 404",
-  "description": "Suite de auditoría defensiva: cabeceras HTTP, CSP, escáner de código, JWT, cookies, OWASP Top 10, CVSS y utilidades. 100% local, sin servidor.",
+  "description": "Suite de análisis de seguridad web: escáner de URL en vivo, cabeceras HTTP, CSP, escáner de código, JWT, cookies, OWASP Top 10, CVSS y utilidades. Informes exportables. Análisis en el navegador.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
