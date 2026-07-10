@@ -2,13 +2,36 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/).
 
-## [2.0.2] — 2026-07-10
-### Añadido
-- **Instalación PWA en iOS**: metadatos `apple-mobile-web-app-*` y `apple-touch-icon` para que la app se instale y se muestre correctamente al añadirla a la pantalla de inicio en Safari/iOS.
+## [2.1.1] — 2026-07-10
 ### Corregido
-- **Accesibilidad de la barrera ética**: el modal declara `role="dialog"`, `aria-modal` y `aria-labelledby`, y el icono se marca como decorativo para lectores de pantalla.
-- **Ruido en el analizador de JWT**: la ausencia del claim opcional `iat` pasa de severidad *baja* a *informativa*, evitando penalizar tokens correctos.
-- Coherencia de versión en interfaz, service worker, manifiesto y README.
+- **CVSS 3.1: redondeo conforme al spec.** `Math.ceil(base*10)/10` se sustituye por el `Roundup` del Apéndice A (aritmética entera). Una comparación exhaustiva contra una implementación de referencia —validada primero con 17 vectores de puntuación publicada— confirmó que **los 2 592 vectores posibles ya coincidían**, pero el método anterior funcionaba por suerte (`8.6*10 === 86.00000000000001`): habría fallado al añadir métricas temporales o ambientales.
+- **Service worker: network-first para el HTML.** Antes `index.html` se servía siempre desde caché, de modo que al publicar una versión los usuarios veían la anterior hasta la segunda visita. Ahora el documento se pide a la red (timeout 3 s) con la caché como respaldo; los assets estáticos siguen cache-first y las peticiones cross-origin (relays, Observatory) no se interceptan. Verificado con 11 pruebas unitarias del SW.
+- **Escáner: falso positivo en manejadores inline.** Atributos como `once=""` u `online-status=""` casaban con `/^on[a-z]+$/` y se contaban como handlers de eventos. Ahora solo cuentan los nombres `on*` que existen realmente como propiedad de un elemento DOM.
+
+### Añadido
+- **Suite de precisión del escáner** (`qa/test-scanner.mjs`): 24 comprobaciones sobre un corpus de páginas realistas — limpia, diccionario i18n, genuinamente vulnerable, trampas de falsos secretos (`sk-panel`, `@sk-toolkit`), JWT, conteo SRI y contenido mixto activo/pasivo.
+- **Verificación exhaustiva de CVSS** (`qa/cvss.mjs`): la implementación de la app contra el spec en todas las combinaciones posibles.
+- **Pruebas unitarias del service worker** (`qa/test-sw.mjs`): network-first, fallback offline, timeout, respuesta 500, cache-first de assets y no-intercepción cross-origin.
+- Las cinco suites jsdom viven ahora en `qa/` y corren con `npm run test:unit`, también en CI antes de Playwright (no necesitan navegador).
+
+## [2.1.0] — 2026-07-10
+### Añadido
+- **Relay propio como ciudadano de primera clase.** El relay CORS del usuario ahora se prueba **solo y primero**; los relays públicos quedan como red de seguridad. Con un relay propio configurado, no se hace ni una sola petición a los públicos.
+- **Persistencia del relay** en `localStorage`, con **validación en vivo** (exige `https://`, URL bien formada y sufijo `/` o `=`) y un botón **«Probar»** que verifica contra `example.com` antes de confiar en él.
+- **`relay/worker.js`**: Cloudflare Worker listo para desplegar, con restricción de origen, **protección anti-SSRF** (bloquea `localhost`, rangos privados y endpoints de metadatos de nube), límite de 5 MB y timeout de 15 s. Incluye `relay/README.md` y `relay/wrangler.toml`.
+- **Persistencia del checklist OWASP**, indexada por código de categoría (`A01`…`A10`) y no por posición, de modo que reordenar el array nunca corrompe un checklist guardado. Con botón **«Reiniciar checklist»** y contador de cobertura en vivo.
+- **Suite E2E con Playwright** (`tests/aegis.spec.js`): 20 pruebas en Chromium y Pixel 5 que cubren el fallo total de red, la precedencia del relay propio, la persistencia, la regresión de XSS vía Observatory, la barrera ética y el menú móvil.
+- **Auditoría de accesibilidad con `axe-core`** integrada en la suite, ejecutada sobre las 11 vistas más la barrera ética.
+- **CI en GitHub Actions** (`.github/workflows/qa.yml`) que ejecuta todo lo anterior en cada push.
+
+### Corregido
+- **Contraste WCAG 2.1 AA.** Una auditoría exhaustiva de los 28 pares color/fondo reales de la interfaz reveló 4 fallos que la comprobación manual anterior no vio, porque solo se había medido contra el fondo de página y no contra el de las tarjetas:
+  - `--faint` `#697d96` → `#788aa1` (4,06:1 sobre `--surface` → **4,53:1** en el peor fondo)
+  - `--muted` `#7789a1` → `#90a1b6` (para preservar los tres niveles de jerarquía tipográfica)
+  - `--red` `#e5484d` → `#e64e53` (4,37:1 → **4,55:1** como texto sobre tarjetas)
+- **El registro del service worker podía abortar el arranque de la app.** El guard `'serviceWorker' in navigator` es cierto incluso cuando el valor es `undefined` (`file://`, ciertos modos privados), y `.register` lanzaba. Ahora se comprueba el valor, no la clave, y `boot()` está blindado.
+- El código del Worker que mostraba la interfaz era un **proxy abierto** (`Access-Control-Allow-Origin: *`, sin validación de destino). Sustituido por una versión con origen restringido y anti-SSRF.
+- Las casillas del checklist OWASP y del constructor de CSP usaban `<div>` en lugar de `<label for>`: no eran clicables desde el texto ni se anunciaban correctamente.
 
 ## [2.0.1] — 2026-07-10
 ### Corregido
