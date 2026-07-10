@@ -10,7 +10,7 @@
 [![Sin dependencias](https://img.shields.io/badge/dependencias-0-49d6c8)](#)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-3fbf7a)](LICENSE)
 [![Universo 404](https://img.shields.io/badge/Universo-404-c9d6e6)](#)
-[![Versión](https://img.shields.io/badge/versión-2.0.1-5b8def)](CHANGELOG.md)
+[![Versión](https://img.shields.io/badge/versión-2.0.2-5b8def)](CHANGELOG.md)
 
 </div>
 
@@ -69,7 +69,7 @@ Para sitios que bloquean relays, abre **Opciones avanzadas** y pega el HTML de l
 ```bash
 git init
 git add .
-git commit -m "AEGIS 404 v2.0.1"
+git commit -m "AEGIS 404 v2.0.2"
 git branch -M main
 git remote add origin https://github.com/ivan7800/aegis-404.git
 git push -u origin main
