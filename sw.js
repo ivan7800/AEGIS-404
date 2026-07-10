@@ -1,5 +1,5 @@
 /* AEGIS 404 — service worker · offline-first, cache-versioned */
-const CACHE = 'aegis404-v1.0.0';
+const CACHE = 'aegis404-v2.0.1';
 const ASSETS = [
   './',
   './index.html',
@@ -24,10 +24,13 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  // Cache-first for same-origin assets, network fallback.
+  // Only handle same-origin navigation/asset requests. Cross-origin
+  // requests (CORS relays, Observatory API) pass straight to the network
+  // so live-scan responses are never served from — or corrupted by — cache.
+  if (new URL(req.url).origin !== self.location.origin) return;
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
-      if (res.ok && new URL(req.url).origin === self.location.origin) {
+      if (res.ok) {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(req, copy));
       }
