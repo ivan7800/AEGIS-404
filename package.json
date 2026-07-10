@@ -1,0 +1,18 @@
+{
+  "name": "aegis-404",
+  "version": "2.1.1",
+  "private": true,
+  "description": "AEGIS 404 — Suite de análisis de seguridad web. La app es un index.html sin dependencias; esto es solo el tooling de QA.",
+  "scripts": {
+    "serve": "npx --yes http-server -p 8000 -c-1 .",
+    "test": "playwright test",
+    "test:a11y": "playwright test -g axe",
+    "test:ui": "playwright test --ui",
+    "test:unit": "node qa/test-app.mjs && node qa/test-sw.mjs && node qa/test-scanner.mjs && node qa/cvss.mjs && node qa/contrast.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.49.0",
+    "jsdom": "^25.0.0"
+  }
+}

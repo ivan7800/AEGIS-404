@@ -6,22 +6,21 @@
 <meta name="theme-color" content="#0a0e14">
 <meta name="description" content="AEGIS 404 — Suite de análisis de seguridad web. Escanea cualquier URL en vivo: cabeceras, CSP, contenido mixto, SRI, secretos, formularios y más. Informes exportables. Análisis en el navegador.">
 <meta name="color-scheme" content="dark">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AEGIS 404">
+<link rel="apple-touch-icon" href="icon-512.png">
 <title>AEGIS 404 — Suite de Análisis de Seguridad Web</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 4 7v9c0 7 5 11 12 14 7-3 12-7 12-14V7z' fill='%230a0e14' stroke='%23e8a13a' stroke-width='2'/%3E%3Cpath d='M16 10v7M16 21v1' stroke='%23e8a13a' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 :root{
   --ink:#0a0e14; --panel:#0f1620; --surface:#141c28; --surface-2:#182231;
   --line:#20304a; --line-soft:#182233;
-  --text:#c9d6e6; --muted:#7789a1; --faint:#4a5a72;
+  --text:#c9d6e6; --muted:#90a1b6; --faint:#788aa1;
   --cyan:#49d6c8; --cyan-dim:#2b8a83;
   --amber:#e8a13a; --amber-dim:#8a6320;
-  --red:#e5484d; --red-dim:#8f2b2f;
+  --red:#e64e53; --red-dim:#8f2b2f;
   --green:#3fbf7a; --green-dim:#256a48;
   --blue:#5b8def;
   --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
@@ -171,7 +170,7 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
 .cbrow{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--line-soft)}
 .cbrow:last-child{border-bottom:0}
 .cbrow input[type=checkbox]{width:19px;height:19px;accent-color:var(--amber);margin-top:2px;flex-shrink:0;cursor:pointer}
-.cbrow .txt{flex:1}
+.cbrow .txt{flex:1;cursor:pointer}
 .cbrow .txt b{font-size:13.5px;display:block}
 .cbrow .txt small{color:var(--muted);font-size:12.5px}
 
@@ -252,6 +251,14 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
 .advhint{margin:7px 0 0;font-size:11.5px;line-height:1.55;color:var(--muted)}
 .advhint code{font-family:var(--mono);background:var(--surface);padding:1px 5px;border-radius:4px;color:var(--cyan);font-size:11px}
 .linklike{background:none;border:0;color:var(--amber);cursor:pointer;font:inherit;font-size:11.5px;padding:0;text-decoration:underline;margin-left:2px}
+.relayrow{display:flex;gap:8px;align-items:center}
+.relayrow input{flex:1;min-width:0}
+.relayrow .btn{flex-shrink:0;white-space:nowrap}
+.relaystat{font-size:11.5px;font-family:var(--mono);margin-top:7px;min-height:16px;display:flex;align-items:center;gap:6px}
+.relaystat.ok{color:var(--green)}
+.relaystat.bad{color:var(--red)}
+.relaystat.busy{color:var(--muted)}
+@media(max-width:480px){.relayrow{flex-wrap:wrap}.relayrow .btn{width:100%;justify-content:center}}
 .workercode{margin-top:9px;padding:12px 13px;background:#05070b;border:1px solid var(--line-soft);border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--c-txt,#c9d6e6);overflow-x:auto;white-space:pre}
 .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-family:var(--mono);color:var(--muted);background:var(--ink);border:1px solid var(--line-soft);border-radius:20px;padding:4px 11px}
@@ -328,9 +335,19 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
   .ring{width:100px;height:100px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- Skip link (accessibility) ---------- */
+.skip-link{position:absolute;top:-100%;left:0;z-index:9999;background:var(--amber);color:#241802;padding:10px 18px;font-weight:700;font-size:14px;border-radius:0 0 var(--r-sm) 0;text-decoration:none;}
+.skip-link:focus{top:0;}
+
+/* ---------- Noscript ---------- */
+.noscript-msg{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px;text-align:center;font-family:system-ui;color:var(--text);}
+.noscript-msg p{max-width:460px;line-height:1.6;}
 </style>
 </head>
 <body>
+<a href="#content" class="skip-link">Saltar al contenido principal</a>
+<noscript><div class="noscript-msg"><p>⚠️ <strong>AEGIS 404</strong> requiere JavaScript para funcionar. Por favor, actívalo en tu navegador.</p></div></noscript>
 <div class="app">
   <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar" id="sidebar">
@@ -341,7 +358,7 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
         <div class="t">Security Suite</div>
       </div>
     </div>
-    <nav class="nav" id="nav">
+    <nav class="nav" id="nav" aria-label="Navegación principal">
       <div class="nav-label">Panel</div>
       <button data-view="dash" class="active"><span class="ico">◈</span>Inicio</button>
       <div class="nav-label">Escaneo en vivo</div>
@@ -372,8 +389,8 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
     </div>
     <main class="content" id="content"><!-- views injected here --></main>
     <div class="footer">
-      <span>AEGIS 404 · v2.0.2 — Universo 404</span>
-      <span>100% local · sin servidor · sin telemetría</span>
+      <span>AEGIS 404 · v2.1.1 — Universo 404</span>
+      <span>Análisis local · sin telemetría · sin servidor propio</span>
     </div>
   </div>
 </div>
@@ -382,10 +399,10 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
 
 <!-- ============ ETHICS GATE ============ -->
 <div class="scrim" id="gate" style="display:none">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="modal">
     <div class="mh">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 6v6c0 5 3.5 8 9 10 5.5-2 9-5 9-10V6z" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <h2 id="gateTitle">Uso ético y autorizado</h2>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2 3 6v6c0 5 3.5 8 9 10 5.5-2 9-5 9-10V6z" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <h2>Uso ético y autorizado</h2>
     </div>
     <p>AEGIS 404 es una herramienta de <b>auditoría defensiva</b>. El análisis se realiza en tu navegador. El <b>Escáner de URL</b> trae la página objetivo a través de un <b>relay CORS público</b> (por lo que esa URL pasa por un tercero); el resto de módulos analizan datos que aportas y no salen de tu dispositivo.</p>
     <ul>
@@ -414,7 +431,8 @@ const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 /* graceful storage (works on GH Pages, degrades in sandboxes) */
 const store = {
   get(k){try{return localStorage.getItem(k);}catch{return null;}},
-  set(k,v){try{localStorage.setItem(k,v);}catch{}}
+  set(k,v){try{localStorage.setItem(k,v);}catch{}},
+  del(k){try{localStorage.removeItem(k);}catch{}}
 };
 
 /* shared findings registry (per module) drives the Report view */
@@ -733,7 +751,7 @@ VIEWS.csp.bind = root=>{
     ["upgrade-insecure-requests",false,'Fuerza HTTPS en subrecursos'],
   ];
   const bwrap=$('#cBuild',root);
-  bwrap.innerHTML=opts.map((o,i)=>`<div class="cbrow"><input type="checkbox" id="csp${i}" ${o[1]?'checked':''}><div class="txt"><b><code class="inline">${esc(o[0])}</code></b><small>${o[2]}</small></div></div>`).join('');
+  bwrap.innerHTML=opts.map((o,i)=>`<div class="cbrow"><input type="checkbox" id="csp${i}" ${o[1]?'checked':''}><label class="txt" for="csp${i}"><b><code class="inline">${esc(o[0])}</code></b><small>${o[2]}</small></label></div>`).join('');
   const build=()=>{
     const chosen=opts.filter((o,i)=>$('#csp'+i,root).checked).map(o=>o[0]);
     $('#cOut',root).textContent=chosen.length?chosen.join('; '):"default-src 'self'";
@@ -836,7 +854,7 @@ function analyzeJWT(tok){
   const now=Math.floor(Date.now()/1000);
   if(payload.exp==null)f.push({severity:'med',title:'Sin claim exp (expiración)',body:'Un token sin caducidad es válido indefinidamente si se roba.',fix:'Añade <code>exp</code> con una ventana corta.'});
   else if(payload.exp<now)f.push({severity:'info',title:'Token expirado',body:`Caducó el ${new Date(payload.exp*1000).toLocaleString()}.`});
-  if(payload.iat==null)f.push({severity:'info',title:'Sin claim iat',body:'El claim <code>iat</code> es opcional, pero registrar la emisión ayuda a aplicar políticas de antigüedad y detectar reutilización de tokens.',fix:'Considera incluir <code>iat</code>.'});
+  if(payload.iat==null)f.push({severity:'low',title:'Sin claim iat',body:'Sin <code>iat</code> es más difícil aplicar políticas de antigüedad.',fix:'Incluye <code>iat</code>.'});
   Object.keys(payload).forEach(k=>{ if(/pass|secret|ssn|card|cvv|token/i.test(k))
     f.push({severity:'high',title:`Claim sensible en el payload: "${esc(k)}"`,body:'El payload de un JWT solo está codificado (no cifrado): cualquiera lo lee.',fix:'No incluyas datos sensibles en el JWT.'});});
   if(!f.length)f.push({severity:'ok',title:'Sin problemas evidentes en la estructura',body:'Recuerda: sin el secreto no se puede verificar la firma aquí.'});
@@ -932,12 +950,38 @@ VIEWS.owasp = ()=>`
   <div class="card"><h2><span class="dot"></span>Checklist de cobertura</h2>
     <div id="owChk"></div>
     <div class="row" style="margin-top:14px"><button class="btn primary" id="owRun">Generar hallazgos</button>
+      <button class="btn ghost sm" id="owReset">Reiniciar checklist</button>
       <span style="font-size:12.5px;color:var(--muted)" id="owCount"></span></div>
   </div>
   <div class="card"><h2><span class="dot"></span>Referencia</h2><div id="owRef"></div></div>`;
+/* OWASP checklist state persists by category code (A01…A10), not by index,
+   so reordering the OWASP array can never corrupt a saved checklist. */
+function owaspState(){
+  try{ const v=JSON.parse(store.get('aegis-owasp')||'{}'); return (v&&typeof v==='object')?v:{}; }
+  catch{ return {}; }
+}
+function owaspSave(state){ store.set('aegis-owasp',JSON.stringify(state)); }
+
 VIEWS.owasp.bind = root=>{
-  $('#owChk',root).innerHTML=OWASP.map((o,i)=>`<div class="cbrow"><input type="checkbox" id="ow${i}"><div class="txt"><b>${o[0]} · ${esc(o[1])}</b><small>${esc(o[2])}</small></div></div>`).join('');
+  const state=owaspState();
+  $('#owChk',root).innerHTML=OWASP.map((o,i)=>`<div class="cbrow"><input type="checkbox" id="ow${i}" data-code="${o[0]}" ${state[o[0]]?'checked':''}><label class="txt" for="ow${i}"><b>${o[0]} · ${esc(o[1])}</b><small>${esc(o[2])}</small></label></div>`).join('');
   $('#owRef',root).innerHTML=OWASP.map(o=>`<div class="owasp-card"><h3><span class="num">${o[0]}</span>${esc(o[1])}</h3><p>${esc(o[2])}</p><div class="rem"><b>Remediación</b><br>${esc(o[3])}</div></div>`).join('');
+
+  const covered=()=>OWASP.filter(o=>$('#ow'+OWASP.indexOf(o),root).checked).length;
+  const showCount=()=>{
+    const c=covered();
+    $('#owCount',root).textContent=`${c} de ${OWASP.length} categorías marcadas como cubiertas.`;
+  };
+
+  /* persist every toggle immediately — the user never loses the checklist */
+  $$('#owChk input[type=checkbox]',root).forEach(cb=>cb.onchange=()=>{
+    const st=owaspState();
+    if(cb.checked) st[cb.dataset.code]=1; else delete st[cb.dataset.code];
+    owaspSave(st);
+    showCount();
+  });
+  showCount();
+
   $('#owRun',root).onclick=()=>{
     const f=[];
     OWASP.forEach((o,i)=>{ if(!$('#ow'+i,root).checked)
@@ -945,6 +989,14 @@ VIEWS.owasp.bind = root=>{
     setFindings('owasp',f);
     $('#owCount',root).textContent=f.length?`${f.length} categoría(s) sin cubrir añadidas al informe.`:'Todas las categorías marcadas como cubiertas.';
     toast(f.length?`${f.length} hallazgos generados`:'Checklist completo');
+  };
+
+  $('#owReset',root).onclick=()=>{
+    store.del('aegis-owasp');
+    $$('#owChk input[type=checkbox]',root).forEach(cb=>cb.checked=false);
+    setFindings('owasp',[]);
+    showCount();
+    toast('Checklist reiniciado');
   };
 };
 
@@ -959,6 +1011,12 @@ const CVSS_M = {
   I:{label:'Integridad',opts:{H:['Alta',.56],L:['Baja',.22],N:['Ninguna',0]}},
   A:{label:'Disponibilidad',opts:{H:['Alta',.56],L:['Baja',.22],N:['Ninguna',0]}},
 };
+/* Roundup del CVSS v3.1, Apéndice A. Opera sobre enteros para evitar el error
+   de coma flotante: Math.ceil(8.6*10)/10 devuelve 8.7, porque 8.6*10 === 86.00000000000001 */
+function roundup(x){
+  const i=Math.round(x*100000);
+  return (i%10000===0) ? i/100000 : (Math.floor(i/10000)+1)/10;
+}
 function cvssScore(s){
   let pr=CVSS_M.PR.opts[s.PR][1];
   if(s.S==='C'){pr={.62:.68,.27:.5}[pr]||pr;}
@@ -967,8 +1025,7 @@ function cvssScore(s){
   const expl=8.22*CVSS_M.AV.opts[s.AV][1]*CVSS_M.AC.opts[s.AC][1]*pr*CVSS_M.UI.opts[s.UI][1];
   let base;
   if(impact<=0)base=0;
-  else base = s.S==='U' ? Math.min(impact+expl,10) : Math.min(1.08*(impact+expl),10);
-  base=Math.ceil(base*10)/10;
+  else base = roundup(s.S==='U' ? Math.min(impact+expl,10) : Math.min(1.08*(impact+expl),10));
   const vec=`CVSS:3.1/AV:${s.AV}/AC:${s.AC}/PR:${s.PR}/UI:${s.UI}/S:${s.S}/C:${s.C}/I:${s.I}/A:${s.A}`;
   let rate='None',col=var_('--muted');
   if(base>=9){rate='Crítico';col=var_('--red');}
@@ -978,8 +1035,8 @@ function cvssScore(s){
   return {base,rate,col,vec};
 }
 VIEWS.cvss = ()=>{
-  const sel={AV:'N',AC:'L',PR:'N',UI:'N',S:'U',C:'H',I:'H',A:'H'};
-  window.__cvss=sel;
+  if(!_cvssState) _cvssState={AV:'N',AC:'L',PR:'N',UI:'N',S:'U',C:'H',I:'H',A:'H'};
+  const sel=_cvssState;
   const seg=(k)=>`<div class="metric"><label>${CVSS_M[k].label}</label><div class="seg" data-m="${k}">`+
     Object.entries(CVSS_M[k].opts).map(([code,[name]])=>`<button data-v="${code}" class="${sel[k]===code?'on':''}">${name}</button>`).join('')+`</div></div>`;
   return `<div class="head"><div class="eyebrow">▤ CVSS v3.1</div>
@@ -994,7 +1051,7 @@ VIEWS.cvss = ()=>{
     </div></div></div>`;
 };
 VIEWS.cvss.bind = root=>{
-  const sel=window.__cvss;
+  const sel=_cvssState;
   const upd=()=>{
     const r=cvssScore(sel);
     $('#cvRing',root).innerHTML=ringSVG(r.base*10,r.col)+`<div class="lbl"><b style="color:${r.col}">${r.base.toFixed(1)}</b><small>Base</small></div>`;
@@ -1071,7 +1128,7 @@ VIEWS.utils = ()=>`
 VIEWS.utils.bind = root=>{
   const T={
     b64e:s=>btoa(unescape(encodeURIComponent(s))),
-    b64d:s=>decodeURIComponent(escape(atob(s))),
+    b64d:s=>{try{return new TextDecoder('utf-8').decode(Uint8Array.from(atob(s),c=>c.charCodeAt(0)));}catch{return atob(s);}},
     urle:s=>encodeURIComponent(s), urld:s=>decodeURIComponent(s),
     hexe:s=>[...new TextEncoder().encode(s)].map(b=>b.toString(16).padStart(2,'0')).join(' '),
     hexd:s=>new TextDecoder().decode(new Uint8Array(s.trim().split(/\s+/).map(h=>parseInt(h,16)))),
@@ -1221,6 +1278,7 @@ ${rows||'<p>Sin hallazgos registrados.</p>'}
 /* =======================================================================
    LIVE URL SCANNER — fetch real pages via CORS relays, analyze locally
    ==================================================================== */
+let _cvssState = null;          // persists CVSS metric selections across navigation
 let SCAN_QUEUE = null;          // {url} pending when navigating from dashboard
 let SCANNING = false;
 
@@ -1281,25 +1339,71 @@ async function fetchViaRelay(p, target, ms){
   return {html, source:p.name, httpStatus:null, contentType:res.headers.get('content-type')||'', finalUrl:target};
 }
 
-/* Race all relays in parallel; first to return usable HTML wins. customProxy is tried too. */
-async function fetchPage(u, customProxy, onStep){
-  const target=u.href;
-  const chain=[];
-  if(customProxy){
-    chain.push({name:'tu relay', build:x=>customProxy+(/=$/.test(customProxy)?encodeURIComponent(x):x), kind:'raw'});
+/* Validate a user-supplied relay URL. Rejects anything that isn't a plain https endpoint. */
+function validateRelay(raw){
+  const s=String(raw||'').trim();
+  if(!s) return {ok:false, reason:'vacío'};
+  let u;
+  try{ u=new URL(s); }catch{ return {ok:false, reason:'no es una URL válida'}; }
+  if(u.protocol!=='https:') return {ok:false, reason:'debe usar https://'};
+  if(!/[/=]$/.test(s)) return {ok:false, reason:'debe terminar en "/" o en "=" (p.ej. …/?url=)'};
+  return {ok:true, url:s};
+}
+
+/* Build a relay descriptor from a validated custom relay URL. */
+function customRelay(url){
+  return {name:'tu relay', build:x=>url+(/=$/.test(url)?encodeURIComponent(x):x), kind:'raw'};
+}
+
+/* Probe a relay against a known-good target. Used by the "Probar" button. */
+async function probeRelay(url){
+  const v=validateRelay(url);
+  if(!v.ok) return {ok:false, reason:v.reason};
+  try{
+    const r=await fetchViaRelay(customRelay(v.url),'https://example.com/',12000);
+    if(!/example/i.test(r.html)) return {ok:false, reason:'responde, pero no devuelve el HTML esperado'};
+    return {ok:true};
+  }catch(e){
+    return {ok:false, reason:e.name==='AbortError'?'timeout (12s)':(e.message||'error de red')};
   }
-  chain.push(...PROXIES);
-  onStep&&onStep(`Probando ${chain.length} relays en paralelo…`);
+}
+
+/* Race a set of relays in parallel; first to return usable HTML wins. */
+async function raceRelays(chain, target, ms, label, onStep){
+  onStep&&onStep(label);
   const errs=new Array(chain.length).fill('?');
   const attempts=chain.map((p,i)=>
-    fetchViaRelay(p, target, 15000)
+    fetchViaRelay(p, target, ms)
       .then(r=>{ errs[i]=`${p.name}: ok`; return r; })
       .catch(e=>{ errs[i]=`${p.name}: ${e.name==='AbortError'?'timeout':(e.message||'error')}`; throw e; })
   );
+  try{ return await Promise.any(attempts); }
+  catch{ throw new Error(errs.join(' · ')); }
+}
+
+/* Fetch strategy: a user's own relay is authoritative and is tried alone first.
+   Only if it fails (or none is configured) do we race the flaky public pool. */
+async function fetchPage(u, customProxy, onStep){
+  const target=u.href;
+  const v=validateRelay(customProxy);
+
+  if(v.ok){
+    try{
+      return await raceRelays([customRelay(v.url)], target, 15000, 'Usando tu relay…', onStep);
+    }catch(e){
+      onStep&&onStep('Tu relay falló. Probando relays públicos…');
+      try{
+        return await raceRelays(PROXIES, target, 15000, `Probando ${PROXIES.length} relays públicos…`, onStep);
+      }catch(e2){
+        throw new Error(`Tu relay falló (${e.message}) y ningún relay público respondió. ${e2.message}`);
+      }
+    }
+  }
+
   try{
-    return await Promise.any(attempts);
-  }catch{
-    throw new Error('Ningún relay pudo traer la página. '+errs.join(' · '));
+    return await raceRelays(PROXIES, target, 15000, `Probando ${PROXIES.length} relays en paralelo…`, onStep);
+  }catch(e){
+    throw new Error('Ningún relay pudo traer la página. '+e.message);
   }
 }
 
@@ -1340,8 +1444,8 @@ function observatoryFindings(obs){
       if(!desc && passed!==false) return;
       const sev=/content-security|strict-transport|cookie|redirection/i.test(name)?'med':'low';
       out.push({severity:sev,cat:'headers',
-        title:`Observatory: ${strip_(String(name)).replace(/-/g,' ')}`,
-        body:strip_(String(desc))||'Prueba de cabeceras no superada.',
+        title:`Observatory: ${esc(strip_(String(name)).replace(/-/g,' '))}`,
+        body:esc(strip_(String(desc)))||'Prueba de cabeceras no superada.',
         fix:'Revisa la configuración del servidor para esta cabecera.'});
     });
   }
@@ -1401,7 +1505,13 @@ function analyzePage(html, base){
     'El código embebido en la página amplía la superficie de XSS y obliga a debilitar la CSP con <code>unsafe-inline</code>.',
     'Externaliza el JavaScript a archivos <code>.js</code> y usa nonces o hashes en la CSP.');
   let handlers=0;
-  doc.querySelectorAll('*').forEach(elm=>{ for(const a of elm.attributes){ if(/^on[a-z]+$/i.test(a.name)) handlers++; } });
+  const probe=document.createElement('div');
+  doc.querySelectorAll('*').forEach(elm=>{ for(const a of elm.attributes){
+    const n=a.name.toLowerCase();
+    // "once", "online"… casan con /^on/ pero no son handlers reales; se
+    // comprueba que el nombre exista como propiedad on* de un elemento DOM.
+    if(/^on[a-z]+$/.test(n) && (n in probe)) handlers++;
+  } });
   if(handlers) push('med','content',`Manejadores de eventos inline (${handlers})`,
     'Atributos como <code>onclick=</code> requieren <code>unsafe-inline</code> en la CSP y facilitan la inyección de scripts.',
     'Sustituye por <code>addEventListener</code> en un script externo.');
@@ -1597,7 +1707,8 @@ async function runScan(rawUrl, root){
 
   SCANNING=true;
   const btn=$('#scanGo',root); if(btn){btn.disabled=true;}
-  const customProxy=($('#scanProxy',root)?.value||'').trim();
+  try {
+  const customProxy=($('#scanProxy',root)?.value||store.get('aegis-relay')||'').trim();
   const manualHtml=($('#scanManual',root)?.value||'').trim();
 
   const setProg=(pct,msg)=>{ out.querySelector('.scanprog .bar>i').style.width=pct+'%'; out.querySelector('.scanprog .step').innerHTML=`<span class="spin"></span>${esc(msg)}`; };
@@ -1641,7 +1752,6 @@ async function runScan(rawUrl, root){
   if(!html){
     out.innerHTML=`<div class="disc"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 3v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/></svg>
       <div><b>No se pudo obtener la página.</b><br>${esc(sources.page.detail)}<br><br>Los relays CORS públicos gratuitos son inestables (caídas, rate-limit, 403) o el sitio los bloquea. Dos salidas fiables en <b>Opciones avanzadas</b>:<br>· <b>Pega el HTML</b> de la página (Ctrl+U → seleccionar todo → copiar) y reescanea al instante, sin red.<br>· <b>Usa tu propio relay</b> (Cloudflare Workers, gratis) — la solución definitiva. El código del Worker está ahí mismo.</div></div>`;
-    SCANNING=false; if(btn)btn.disabled=false;
     return;
   }
 
@@ -1656,8 +1766,10 @@ async function runScan(rawUrl, root){
   saveRecent({url:base.href,grade,color,findings:active.length,when:when.toLocaleDateString('es-ES'),ts:Date.now()});
 
   renderScanResult(out,root);
-  SCANNING=false; if(btn)btn.disabled=false;
   toast(`Escaneo completado · nota ${grade}`);
+  } finally {
+    SCANNING=false; if(btn)btn.disabled=false;
+  }
 }
 
 function renderScanResult(out,root){
@@ -1755,18 +1867,44 @@ VIEWS.scan = ()=>{
         <summary>Opciones avanzadas</summary>
         <div class="advbody">
           <div>
-            <label class="fld">Relay CORS propio (recomendado para uso serio)</label>
-            <input type="text" id="scanProxy" placeholder="https://mi-relay.tu-usuario.workers.dev/?url=" autocomplete="off" spellcheck="false">
-            <p class="advhint">Los relays públicos gratuitos son inestables (caídas, rate-limit, 403). Para fiabilidad, monta el tuyo gratis en <b>Cloudflare Workers</b> (100k peticiones/día) y pégalo aquí. Si la URL termina en <code>=</code> se añade codificada; si termina en <code>/</code> se añade tal cual.
+            <label class="fld" for="scanProxy">Relay CORS propio (recomendado para uso serio)</label>
+            <div class="relayrow">
+              <input type="text" id="scanProxy" placeholder="https://mi-relay.tu-usuario.workers.dev/?url=" autocomplete="off" spellcheck="false">
+              <button type="button" class="btn sm" id="probeRelay">Probar</button>
+            </div>
+            <div id="relayStatus" class="relaystat" role="status" aria-live="polite"></div>
+            <p class="advhint">Los relays públicos gratuitos son inestables (caídas, rate-limit, 403). Para fiabilidad, monta el tuyo gratis en <b>Cloudflare Workers</b> (100k peticiones/día) y pégalo aquí. Guía paso a paso y código completo en <code>relay/</code> del repositorio. Si la URL termina en <code>=</code> se añade codificada; si termina en <code>/</code> se añade tal cual.
             <button type="button" class="linklike" id="showWorker">Ver código del Worker ▾</button></p>
-            <pre class="workercode" id="workerCode" hidden>export default {
+            <pre class="workercode" id="workerCode" hidden>// Versión resumida. La completa (con más guardas) está en relay/worker.js
+const ALLOWED = ['https://ivan7800.github.io'];   // ← pon aquí tu origen
+
+export default {
   async fetch(req) {
-    const u = new URL(req.url).searchParams.get('url');
-    if (!u) return new Response('missing ?url=', { status: 400 });
-    const r = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0 AEGIS404' } });
-    const h = new Headers(r.headers);
-    h.set('Access-Control-Allow-Origin', '*');
-    return new Response(r.body, { status: r.status, headers: h });
+    const origin = req.headers.get('Origin') || '';
+    const cors = {
+      'Access-Control-Allow-Origin': ALLOWED.includes(origin) ? origin : ALLOWED[0],
+      'Vary': 'Origin'
+    };
+    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+    if (origin &amp;&amp; !ALLOWED.includes(origin)) return new Response('origen no autorizado', { status: 403, headers: cors });
+
+    const raw = new URL(req.url).searchParams.get('url');
+    if (!raw) return new Response('falta ?url=', { status: 400, headers: cors });
+
+    let t; try { t = new URL(raw); } catch { return new Response('url no válida', { status: 400, headers: cors }); }
+    if (!/^https?:$/.test(t.protocol)) return new Response('esquema no permitido', { status: 400, headers: cors });
+    // anti-SSRF: nunca dejes que apunte a tu red interna
+    if (/^(localhost|127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/i.test(t.hostname))
+      return new Response('destino no permitido', { status: 403, headers: cors });
+
+    const r = await fetch(t.href, { redirect: 'follow',
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AEGIS404/2.1)' } });
+    const body = await r.text();
+    return new Response(body, { status: 200, headers: {
+      ...cors,
+      'Content-Type': 'text/plain; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff'
+    }});
   }
 }</pre>
           </div>
@@ -1793,6 +1931,34 @@ VIEWS.scan.bind = root=>{
   $$('[data-rescan]',root).forEach(b=>b.onclick=()=>{$('#scanUrl',root).value=b.dataset.rescan;run();});
   const sw=$('#showWorker',root), wc=$('#workerCode',root);
   if(sw&&wc)sw.onclick=()=>{const h=wc.hasAttribute('hidden');if(h)wc.removeAttribute('hidden');else wc.setAttribute('hidden','');sw.textContent=h?'Ocultar código del Worker ▴':'Ver código del Worker ▾';};
+
+  /* --- custom relay: restore, validate live, persist, probe --- */
+  const relayIn=$('#scanProxy',root), relayStat=$('#relayStatus',root), relayBtn=$('#probeRelay',root);
+  const setStat=(cls,msg)=>{ relayStat.className='relaystat '+cls; relayStat.textContent=msg; };
+  const saved=store.get('aegis-relay');
+  if(saved){ relayIn.value=saved; setStat('ok','✓ Relay propio guardado — se usará antes que los públicos.'); }
+  if(relayIn){
+    relayIn.addEventListener('input',()=>{
+      const raw=relayIn.value.trim();
+      if(!raw){ store.del('aegis-relay'); setStat('',''); return; }
+      const v=validateRelay(raw);
+      if(v.ok){ store.set('aegis-relay',v.url); setStat('ok','✓ Guardado. Pulsa «Probar» para confirmar que responde.'); }
+      else { setStat('bad','✕ '+v.reason); }
+    });
+  }
+  if(relayBtn){
+    relayBtn.onclick=async()=>{
+      const raw=relayIn.value.trim();
+      if(!raw){ setStat('bad','✕ Introduce la URL de tu relay primero.'); relayIn.focus(); return; }
+      relayBtn.disabled=true;
+      setStat('busy','Probando contra example.com…');
+      const r=await probeRelay(raw);
+      relayBtn.disabled=false;
+      if(r.ok){ store.set('aegis-relay',validateRelay(raw).url); setStat('ok','✓ Tu relay funciona. Se usará en todos los escaneos.'); toast('Relay verificado'); }
+      else { setStat('bad','✕ No funciona: '+r.reason); }
+    };
+  }
+
   if(SCAN_QUEUE){ const u=SCAN_QUEUE.url; SCAN_QUEUE=null; $('#scanUrl',root).value=u; runScan(u,root); }
   else if(LAST_SCAN){ $('#scanUrl',root).value=LAST_SCAN.url; renderScanResult($('#scanOut',root),root); }
 };
@@ -1801,12 +1967,19 @@ VIEWS.scan.bind = root=>{
 /* =======================================================================
    ROUTER + SHELL
    ==================================================================== */
+const VIEW_TITLES={dash:'Inicio',scan:'Escáner de URL',headers:'Cabeceras HTTP',csp:'Política CSP',code:'Escáner de código',jwt:'Analizar JWT',cookies:'Cookies',owasp:'OWASP Top 10',cvss:'Calculadora CVSS',utils:'Codificación / Hash',report:'Informe'};
 function go(view){
   const content=$('#content');
   const fn=VIEWS[view]||VIEWS.dash;
   content.innerHTML=fn();
   if(fn.bind)fn.bind(content);
-  $$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  $$('#nav button').forEach(b=>{
+    const active=b.dataset.view===view;
+    b.classList.toggle('active',active);
+    if(active)b.setAttribute('aria-current','page');
+    else b.removeAttribute('aria-current');
+  });
+  document.title=(VIEW_TITLES[view]||view)+' — AEGIS 404';
   window.scrollTo(0,0);
   closeNav();
   store.set('aegis-view',view);
@@ -1822,20 +1995,45 @@ $('#ham').onclick=openNav;
 function boot(){
   refreshBadges();
   go(store.get('aegis-view')||'dash');
-  registerSW();
+  try{ registerSW(); }catch{}
 }
 if(store.get('aegis-ack')==='1'){boot();}
 else{
   const gate=$('#gate');gate.style.display='flex';
+  /* focus trap: keep keyboard within the modal */
+  gate.setAttribute('role','dialog');
+  gate.setAttribute('aria-modal','true');
+  gate.setAttribute('aria-labelledby','gateTitle');
+  $('#gate .modal h2').id='gateTitle';
+  const focusable='button:not([disabled]),input,a[href],[tabindex]:not([tabindex="-1"])';
+  const trapFocus=e=>{
+    if(e.key!=='Tab') return;
+    const els=[...gate.querySelectorAll(focusable)].filter(el=>!el.closest('[hidden]'));
+    if(!els.length) return;
+    const first=els[0],last=els[els.length-1];
+    if(e.shiftKey){if(document.activeElement===first){e.preventDefault();last.focus();}}
+    else{if(document.activeElement===last){e.preventDefault();first.focus();}}
+  };
+  gate.addEventListener('keydown',trapFocus);
+  setTimeout(()=>$('#ackbox')?.focus(),50);
   $('#ackbox').onchange=e=>$('#gateOk').disabled=!e.target.checked;
-  $('#gateOk').onclick=()=>{store.set('aegis-ack','1');gate.style.display='none';boot();};
+  $('#gateOk').onclick=()=>{
+    store.set('aegis-ack','1');
+    gate.removeEventListener('keydown',trapFocus);
+    gate.style.display='none';
+    boot();
+  };
 }
 
-/* service worker */
+/* service worker — never let SW registration break app boot.
+   `'serviceWorker' in navigator` is true even when the value is undefined
+   (file://, some private-browsing modes), so we test the value, not the key. */
 function registerSW(){
-  if('serviceWorker'in navigator){
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  }
+  try{
+    if(navigator.serviceWorker && typeof navigator.serviceWorker.register==='function'){
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    }
+  }catch{ /* SW unavailable — the app works fine without it */ }
 }
 </script>
 </body>

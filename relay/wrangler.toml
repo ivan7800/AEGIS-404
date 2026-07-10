@@ -1,0 +1,6 @@
+name = "aegis-404-relay"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# El plan gratuito basta: 100 000 peticiones/día.
+# Despliega con:  wrangler deploy
