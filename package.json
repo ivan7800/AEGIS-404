@@ -1,6 +1,6 @@
 {
   "name": "aegis-404",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "private": true,
   "description": "AEGIS 404 — Suite de análisis de seguridad web. La app es un index.html sin dependencias; esto es solo el tooling de QA.",
   "scripts": {

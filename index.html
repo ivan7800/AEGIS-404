@@ -389,7 +389,7 @@ pre.out{font-family:var(--mono);font-size:12.5px;background:var(--ink);border:1p
     </div>
     <main class="content" id="content"><!-- views injected here --></main>
     <div class="footer">
-      <span>AEGIS 404 · v2.1.1 — Universo 404</span>
+      <span>AEGIS 404 · v2.1.2 — Universo 404</span>
       <span>Análisis local · sin telemetría · sin servidor propio</span>
     </div>
   </div>
@@ -545,12 +545,7 @@ VIEWS.dash = ()=>{
     <div class="stat"><b style="color:var(--amber)">${high}</b><span>Altos</span></div>
     <div class="stat"><b style="color:var(--cyan)">9</b><span>Módulos</span></div>
   </div>
-  ${recent.length?`<div class="card"><h2><span class="dot"></span>Escaneos recientes</h2>
-    <div class="recent">${recent.map((r,i)=>`<button data-rescan="${esc(r.url)}">
-      <span class="rg" style="color:${r.color};background:${r.color}1f">${r.grade}</span>
-      <span class="rurl">${esc(r.url)}</span>
-      <span class="rmeta">${r.findings} hallazgos · ${r.when}</span>
-      <span class="rx">↻</span></button>`).join('')}</div></div>`:''}
+  ${recentScansHTML(recent)}
   <div class="dashgrid">
     ${tools.map(([v,i,t,d])=>`<button class="tool-card" data-goto="${v}">
       <div class="ti">${i}</div><h3>${t}</h3><p>${d}</p></button>`).join('')}
@@ -856,7 +851,7 @@ function analyzeJWT(tok){
   else if(payload.exp<now)f.push({severity:'info',title:'Token expirado',body:`Caducó el ${new Date(payload.exp*1000).toLocaleString()}.`});
   if(payload.iat==null)f.push({severity:'low',title:'Sin claim iat',body:'Sin <code>iat</code> es más difícil aplicar políticas de antigüedad.',fix:'Incluye <code>iat</code>.'});
   Object.keys(payload).forEach(k=>{ if(/pass|secret|ssn|card|cvv|token/i.test(k))
-    f.push({severity:'high',title:`Claim sensible en el payload: "${esc(k)}"`,body:'El payload de un JWT solo está codificado (no cifrado): cualquiera lo lee.',fix:'No incluyas datos sensibles en el JWT.'});});
+    f.push({severity:'high',title:`Claim sensible en el payload: "${k}"`,body:'El payload de un JWT solo está codificado (no cifrado): cualquiera lo lee.',fix:'No incluyas datos sensibles en el JWT.'});});
   if(!f.length)f.push({severity:'ok',title:'Sin problemas evidentes en la estructura',body:'Recuerda: sin el secreto no se puede verificar la firma aquí.'});
   f.sort((a,b)=>SEV_ORDER[a.severity]-SEV_ORDER[b.severity]);
   return {header,payload,findings:f};
@@ -896,13 +891,13 @@ function analyzeCookies(raw){
     const name=line.split('=')[0].trim();
     const low=line.toLowerCase();
     const has=a=>new RegExp('(^|;\\s*)'+a,'i').test(line);
-    if(!has('secure'))findings.push({severity:'high',title:`Cookie "${esc(name)}" sin Secure`,body:'Puede enviarse por HTTP sin cifrar y ser interceptada.',fix:'Añade el atributo <code>Secure</code>.'});
-    if(!has('httponly'))findings.push({severity:'high',title:`Cookie "${esc(name)}" sin HttpOnly`,body:'Accesible desde JavaScript: robable vía XSS.',fix:'Añade <code>HttpOnly</code> (para cookies de sesión).'});
+    if(!has('secure'))findings.push({severity:'high',title:`Cookie "${name}" sin Secure`,body:'Puede enviarse por HTTP sin cifrar y ser interceptada.',fix:'Añade el atributo <code>Secure</code>.'});
+    if(!has('httponly'))findings.push({severity:'high',title:`Cookie "${name}" sin HttpOnly`,body:'Accesible desde JavaScript: robable vía XSS.',fix:'Añade <code>HttpOnly</code> (para cookies de sesión).'});
     const sm=/samesite=(\w+)/i.exec(line);
-    if(!sm)findings.push({severity:'med',title:`Cookie "${esc(name)}" sin SameSite`,body:'Sin SameSite queda expuesta a CSRF en navegadores antiguos.',fix:'Añade <code>SameSite=Lax</code> o <code>Strict</code>.'});
-    else if(/none/i.test(sm[1])&&!has('secure'))findings.push({severity:'high',title:`Cookie "${esc(name)}" con SameSite=None sin Secure`,body:'SameSite=None obliga a usar Secure; sin él el navegador la rechaza.',fix:'Añade <code>Secure</code>.'});
+    if(!sm)findings.push({severity:'med',title:`Cookie "${name}" sin SameSite`,body:'Sin SameSite queda expuesta a CSRF en navegadores antiguos.',fix:'Añade <code>SameSite=Lax</code> o <code>Strict</code>.'});
+    else if(/none/i.test(sm[1])&&!has('secure'))findings.push({severity:'high',title:`Cookie "${name}" con SameSite=None sin Secure`,body:'SameSite=None obliga a usar Secure; sin él el navegador la rechaza.',fix:'Añade <code>Secure</code>.'});
     if(/^__host-/i.test(name)&&(/domain=/i.test(low)))findings.push({severity:'low',title:`Prefijo __Host- con atributo Domain`,body:'Las cookies <code>__Host-</code> no deben declarar Domain.',fix:'Elimina <code>Domain</code> de la cookie __Host-.'});
-    if(!/^__(host|secure)-/i.test(name))findings.push({severity:'low',title:`Cookie "${esc(name)}" sin prefijo de seguridad`,body:'Los prefijos <code>__Host-</code>/<code>__Secure-</code> refuerzan garantías del navegador.',fix:'Considera renombrar cookies sensibles con prefijo <code>__Host-</code>.'});
+    if(!/^__(host|secure)-/i.test(name))findings.push({severity:'low',title:`Cookie "${name}" sin prefijo de seguridad`,body:'Los prefijos <code>__Host-</code>/<code>__Secure-</code> refuerzan garantías del navegador.',fix:'Considera renombrar cookies sensibles con prefijo <code>__Host-</code>.'});
   });
   findings.sort((a,b)=>SEV_ORDER[a.severity]-SEV_ORDER[b.severity]);
   if(!findings.length)findings.push({severity:'ok',title:'Cookies correctamente configuradas',body:''});
@@ -1444,7 +1439,7 @@ function observatoryFindings(obs){
       if(!desc && passed!==false) return;
       const sev=/content-security|strict-transport|cookie|redirection/i.test(name)?'med':'low';
       out.push({severity:sev,cat:'headers',
-        title:`Observatory: ${esc(strip_(String(name)).replace(/-/g,' '))}`,
+        title:`Observatory: ${strip_(String(name)).replace(/-/g,' ')}`,
         body:esc(strip_(String(desc)))||'Prueba de cabeceras no superada.',
         fix:'Revisa la configuración del servidor para esta cabecera.'});
     });
@@ -1686,6 +1681,22 @@ function gradeScan(findings){
   const [g,c]=gradeFromScore(score);
   return {score,grade:g,color:c};
 }
+/* Shared, hardened renderer for the "recent scans" card (dashboard + scan view).
+   localStorage is treated as untrusted input: a tampered entry must not be
+   able to inject markup or break out of the style attribute. */
+function recentScansHTML(recent){
+  if(!recent.length) return '';
+  return `<div class="card"><h2><span class="dot"></span>Escaneos recientes</h2>
+    <div class="recent">${recent.map(r=>{
+      const col=/^#[0-9a-fA-F]{3,8}$/.test(String(r.color||''))?r.color:'var(--muted)';
+      const n=Number.isFinite(+r.findings)?+r.findings:0;
+      return `<button data-rescan="${esc(r.url)}">
+      <span class="rg" style="color:${col};background:${col.startsWith('#')?col+'1f':'rgba(120,138,161,.12)'}">${esc(String(r.grade||'?').slice(0,2))}</span>
+      <span class="rurl">${esc(r.url)}</span>
+      <span class="rmeta">${n} hallazgos · ${esc(String(r.when||''))}</span>
+      <span class="rx">↻</span></button>`;}).join('')}</div></div>`;
+}
+
 function recentScans(){
   try{ return JSON.parse(store.get('aegis-recent')||'[]'); }catch{ return []; }
 }
@@ -1737,14 +1748,18 @@ async function runScan(rawUrl, root){
     catch(e){ findings.push({severity:'info',cat:'hygiene',title:'Error analizando el HTML',body:esc(e.message),fix:''}); }
   }
 
-  /* Observatory (best effort, skipped when analyzing pasted HTML) */
-  if(!manualHtml){
+  /* Observatory (best effort). Skipped for pasted HTML, and also when the page
+     fetch failed: the early-return below would discard its findings anyway, so
+     querying it only made the user wait up to 15 s longer to see the error. */
+  if(!manualHtml && html){
     setProg(74,'Consultando cabeceras autoritativas…');
     const obs=await observatoryScan(base.hostname,()=>{});
     if(obs.ok){ sources.headers={state:'ok',detail:`Observatory ${obs.grade||'—'}`}; findings.push(...observatoryFindings(obs)); }
     else{ sources.headers={state:'warn',detail:`Observatory no disponible (${obs.reason||'CORS'})`}; }
-  }else{
+  }else if(manualHtml){
     sources.headers={state:'warn',detail:'Omitido en modo HTML manual'};
+  }else{
+    sources.headers={state:'warn',detail:'Omitido: no se obtuvo la página'};
   }
 
   setProg(92,'Consolidando hallazgos…');
@@ -1917,12 +1932,7 @@ export default {
     </div>
   </div>
   <div id="scanOut"></div>
-  ${recent.length?`<div class="card"><h2><span class="dot"></span>Escaneos recientes</h2>
-    <div class="recent">${recent.map(r=>`<button data-rescan="${esc(r.url)}">
-      <span class="rg" style="color:${r.color};background:${r.color}1f">${r.grade}</span>
-      <span class="rurl">${esc(r.url)}</span>
-      <span class="rmeta">${r.findings} hallazgos · ${r.when}</span>
-      <span class="rx">↻</span></button>`).join('')}</div></div>`:''}`;
+  ${recentScansHTML(recent)}`;
 };
 VIEWS.scan.bind = root=>{
   const run=()=>runScan($('#scanUrl',root).value,root);

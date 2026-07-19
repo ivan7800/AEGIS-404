@@ -2,6 +2,16 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.1.2] — 2026-07-19
+### Corregido
+- **Escáner: fallo rápido cuando la página no se puede obtener.** Cuando todos los relays fallaban, la app aún consultaba Mozilla Observatory (hasta 15 s) y luego descartaba sus resultados en el retorno temprano de error. Ahora Observatory solo se consulta si hay HTML que analizar: el mensaje de error aparece hasta 15 s antes. El panel de fuentes lo indica («Omitido: no se obtuvo la página»).
+- **Doble escapado en títulos de hallazgos.** `findingHTML` escapa el título una vez, pero Observatory, el analizador de JWT y el de cookies aplicaban `esc()` también al construirlo: una cookie llamada `a&b` se mostraba como `a&amp;b`. Eliminado el escape interno; el escape único de `findingHTML` se mantiene (verificado con test de regresión XSS: los nombres maliciosos siguen sin inyectarse).
+- **«Escaneos recientes»: localStorage tratado como entrada no confiable.** La nota (`grade`), el color, el contador y la fecha guardados se interpolaban sin sanear en dos plantillas duplicadas (dashboard y vista de escáner). Una entrada manipulada podía inyectar marcado vía `grade`. Ahora ambas vistas usan un único renderizador compartido (`recentScansHTML`) que valida el color contra `#hex`, trunca la nota a 2 caracteres, fuerza entero en el contador y escapa la fecha. Cubierto por un test que siembra una entrada hostil y verifica que no ejecuta ni inyecta nada en ninguna de las dos vistas.
+- **Service worker: un asset no cacheado sin red ya no recibe `index.html`.** El fallback de `cacheFirst` devolvía el documento HTML a cualquier petición fallida (un `<img>` recibía HTML como imagen). Ahora responde `504` limpio. Caché renombrada a `aegis404-v2.1.2`.
+
+### Añadido
+- 10 pruebas unitarias nuevas (7 en `qa/test-app.mjs`, incl. dashboard y vista de escáner por separado; 2 en `qa/test-sw.mjs`; harness del SW ampliado con `Response`). Total: 64 app + 13 SW + 24 escáner + 2 592 vectores CVSS + contraste.
+
 ## [2.1.1] — 2026-07-10
 ### Corregido
 - **CVSS 3.1: redondeo conforme al spec.** `Math.ceil(base*10)/10` se sustituye por el `Roundup` del Apéndice A (aritmética entera). Una comparación exhaustiva contra una implementación de referencia —validada primero con 17 vectores de puntuación publicada— confirmó que **los 2 592 vectores posibles ya coincidían**, pero el método anterior funcionaba por suerte (`8.6*10 === 86.00000000000001`): habría fallado al añadir métricas temporales o ambientales.

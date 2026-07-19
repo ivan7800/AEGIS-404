@@ -565,6 +565,108 @@ console.log('\nTEST 12 · Barrera ética: modal y foco');
   dom.window.close();
 }
 
+/* ──────────────────────────────────────────────────────────
+   TEST 13 — page fetch fails ⇒ Observatory is NOT queried
+   (its findings were discarded anyway; querying it only made
+   the user wait up to 15 s longer to see the error)
+   ────────────────────────────────────────────────────────── */
+console.log('\nTEST 13 · Fallo total de página: no se consulta Observatory');
+{
+  let obsHits = 0;
+  const fetchImpl = (url) => {
+    if (/observatory/.test(String(url))) { obsHits++; return Promise.reject(new Error('no debería llamarse')); }
+    return Promise.reject(new Error('ECONNREFUSED'));
+  };
+  const dom = await boot({ fetchImpl });
+  const { document } = dom.window;
+  document.querySelector('[data-view="scan"]').click();
+  await sleep(40);
+  document.querySelector('#scanUrl').value = 'example.com';
+  document.querySelector('#scanGo').click();
+  await sleep(900);
+
+  if (obsHits === 0) ok('Observatory no se consulta cuando no hay página que analizar');
+  else no('Observatory omitido en fallo de página', `hits=${obsHits}`);
+  if (/No se pudo obtener la página/.test(document.querySelector('#scanOut').textContent))
+    ok('El mensaje de error se muestra sin la espera extra');
+  else no('Mensaje de error mostrado');
+  dom.window.close();
+}
+
+/* ──────────────────────────────────────────────────────────
+   TEST 14 — finding titles are escaped exactly once
+   (regression: esc() inside the title + esc() in findingHTML
+   rendered `a&b` as `a&amp;b` on screen)
+   ────────────────────────────────────────────────────────── */
+console.log('\nTEST 14 · Títulos de hallazgos: escapado único, sin XSS');
+{
+  const dom = await boot();
+  const { document } = dom.window;
+
+  document.querySelector('[data-view="cookies"]').click();
+  await sleep(40);
+  document.querySelector('#ckIn').value = 'Set-Cookie: a&b<x>=1; Path=/';
+  document.querySelector('#ckRun').click();
+  await sleep(60);
+
+  const titles = [...document.querySelectorAll('#ckResult .f-title')].map(t => t.textContent);
+  if (titles.some(t => t.includes('"a&b<x>"'))) ok('El nombre de la cookie se muestra tal cual (a&b<x>), sin doble escapado');
+  else no('Sin doble escapado en títulos de cookies', JSON.stringify(titles.slice(0, 2)));
+  if (!document.querySelector('#ckResult x')) ok('El “<x>” del nombre no se inyecta como elemento (escapado intacto)');
+  else no('El nombre malicioso no se inyecta');
+
+  document.querySelector('[data-view="jwt"]').click();
+  await sleep(40);
+  // payload: {"password&key":"hunter2"} → claim sensible con & en el nombre
+  const b64u = s => dom.window.btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  document.querySelector('#jIn').value =
+    b64u('{"alg":"HS256","typ":"JWT"}') + '.' + b64u('{"password&key":"hunter2"}') + '.x';
+  document.querySelector('#jRun').click();
+  await sleep(60);
+  const jt = [...document.querySelectorAll('#jResult .f-title')].map(t => t.textContent).join(' | ');
+  if (jt.includes('"password&key"')) ok('El claim sensible se muestra sin doble escapado');
+  else no('Claim sensible sin doble escapado', jt.slice(0, 120));
+  dom.window.close();
+}
+
+/* ──────────────────────────────────────────────────────────
+   TEST 15 — tampered localStorage cannot inject via recent scans
+   ────────────────────────────────────────────────────────── */
+console.log('\nTEST 15 · localStorage manipulado no inyecta en «Escaneos recientes»');
+{
+  const storage = makeStorage();
+  storage.setItem('aegis-recent', JSON.stringify([{
+    url: 'https://example.com/"><img src=x onerror="window.__PWNED2=1">',
+    grade: '<img src=x onerror="window.__PWNED2=1">',
+    color: '";}</style><script>window.__PWNED2=1</script>',
+    findings: '<b>99</b>',
+    when: '<svg onload="window.__PWNED2=1">',
+    ts: Date.now(),
+  }]));
+  const dom = await boot({ storage });   // boot renderiza el DASHBOARD, que también lista recientes
+  const { document } = dom.window;
+
+  if (typeof dom.window.__PWNED2 === 'undefined') ok('El dashboard NO ejecuta la entrada manipulada');
+  else no('Dashboard sin ejecución', '__PWNED2 asignado en el dashboard');
+  const dz = document.querySelector('.recent');
+  if (dz && !dz.querySelector('img,svg,script,style')) ok('Dashboard: sin elementos inyectados');
+  else no('Dashboard sin elementos inyectados');
+
+  document.querySelector('[data-view="scan"]').click();
+  await sleep(60);
+
+  if (typeof dom.window.__PWNED2 === 'undefined') ok('La vista de escáner NO ejecuta la entrada manipulada');
+  else no('Entrada manipulada sin ejecución', '__PWNED2 asignado');
+  const zone = document.querySelector('.recent');
+  if (zone && !zone.querySelector('img,svg,script,style')) ok('No se inyecta ningún elemento (img/svg/script/style)');
+  else no('Sin elementos inyectados en la lista de recientes');
+  const rg = zone && zone.querySelector('.rg');
+  if (rg && !/[<>]/.test(rg.getAttribute('style') || '') && rg.textContent.length <= 2)
+    ok('Color no-hex descartado y nota truncada a 2 caracteres');
+  else no('Sanitizado de color/nota', rg && rg.getAttribute('style'));
+  dom.window.close();
+}
+
 console.log('\n══════════════════════════════════════════════════');
 console.log(`  RESULTADO:  ${pass} pasan   ${fail} fallan`);
 console.log('══════════════════════════════════════════════════\n');

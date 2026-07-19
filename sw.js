@@ -1,5 +1,5 @@
 /* AEGIS 404 — service worker · offline-first, cache-versioned */
-const CACHE = 'aegis404-v2.1.1';
+const CACHE = 'aegis404-v2.1.2';
 const ASSETS = [
   './',
   './index.html',
@@ -55,7 +55,11 @@ function cacheFirst(req) {
       caches.open(CACHE).then(c => c.put(req, copy));
     }
     return res;
-  }).catch(() => caches.match('./index.html')));
+  }).catch(() =>
+    // Never hand index.html to a non-document request (an <img> would receive
+    // HTML). A plain 504 lets the element fail cleanly instead.
+    new Response('', { status: 504, statusText: 'offline' })
+  ));
 }
 
 self.addEventListener('fetch', e => {
