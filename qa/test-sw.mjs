@@ -37,6 +37,11 @@ function makeSW({ network }) {
     fetch: network,
     URL,
     Promise, setTimeout, clearTimeout, console,
+    /* minimal Response for the offline 504 fallback */
+    Response: class {
+      constructor(body, init = {}) { this.body = body; this.status = init.status ?? 200; this.statusText = init.statusText || ''; this.ok = this.status >= 200 && this.status < 300; }
+      clone() { return this; }
+    },
   };
   ctx.self.caches = caches;
   vm.createContext(ctx);
@@ -134,6 +139,19 @@ const RELAY = 'https://mine.workers.dev/?url=https://example.com';
   const r = await dispatch(sw, req(RELAY));
   if (r === undefined) ok('el SW no intercepta: pasan directas a la red');
   else no('el SW no intercepta', 'respondWith fue llamado');
+}
+
+/* 7b — asset no cacheado sin red: 504, nunca index.html */
+{
+  console.log('\n7b · Asset no cacheado sin red: no se sirve HTML como imagen');
+  const sw = makeSW({ network: async () => { throw new Error('offline'); } });
+  sw.store.set(DOC, res('<!doctype html>CACHEADO'));   // el index SÍ está cacheado
+
+  const r = await dispatch(sw, req(ICON));
+  if (r && r.status === 504) ok('responde 504 limpio');
+  else no('responde 504', `status=${r && r.status}`);
+  if (!r || r.body !== '<!doctype html>CACHEADO') ok('no devuelve index.html a una petición de icono');
+  else no('no devuelve index.html a un asset', 'un <img> recibiría HTML');
 }
 
 /* 7 — detección por cabecera accept, no solo por mode */

@@ -10,7 +10,7 @@
 [![Sin dependencias](https://img.shields.io/badge/dependencias-0-49d6c8)](#)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-3fbf7a)](LICENSE)
 [![Universo 404](https://img.shields.io/badge/Universo-404-c9d6e6)](#)
-[![Versión](https://img.shields.io/badge/versión-2.1.1-5b8def)](CHANGELOG.md)
+[![Versión](https://img.shields.io/badge/versión-2.1.2-5b8def)](CHANGELOG.md)
 
 </div>
 
@@ -97,7 +97,7 @@ Las suites cubren el fallo total de red del escáner, la precedencia del relay p
 ```bash
 git init
 git add .
-git commit -m "AEGIS 404 v2.1.1"
+git commit -m "AEGIS 404 v2.1.2"
 git branch -M main
 git remote add origin https://github.com/ivan7800/aegis-404.git
 git push -u origin main
